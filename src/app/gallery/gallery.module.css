@@ -1,0 +1,272 @@
+.main {
+    padding-top: 80px;
+}
+
+/* Hero */
+.hero {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    padding: var(--spacing-20) var(--spacing-4);
+    text-align: center;
+}
+
+.heroContent h1 {
+    font-size: var(--font-size-5xl);
+    color: var(--color-text-white);
+    margin-bottom: var(--spacing-4);
+}
+
+.heroContent p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: var(--font-size-xl);
+}
+
+/* Container */
+.container {
+    max-width: var(--container-xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4);
+}
+
+/* Gallery Section */
+.gallerySection {
+    padding: var(--spacing-16) 0;
+}
+
+/* Albums Grid */
+.albumsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-6);
+}
+
+.albumCard {
+    background: var(--color-bg-card);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.albumCard:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
+}
+
+.albumCover {
+    height: 200px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    position: relative;
+}
+
+.albumOverlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--spacing-3);
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+    color: var(--color-text-white);
+    font-size: var(--font-size-sm);
+    text-align: center;
+}
+
+.albumInfo {
+    padding: var(--spacing-5);
+}
+
+.albumInfo h3 {
+    font-size: var(--font-size-lg);
+    color: var(--color-text);
+    margin-bottom: var(--spacing-2);
+}
+
+.albumInfo p {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    margin: 0;
+}
+
+/* Album View */
+.albumView {}
+
+.backBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    background: transparent;
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-lg);
+    color: var(--color-primary);
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    margin-bottom: var(--spacing-6);
+}
+
+.backBtn:hover {
+    background: var(--color-primary);
+    color: var(--color-text-white);
+}
+
+.backBtn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.albumView h2 {
+    font-size: var(--font-size-3xl);
+    color: var(--color-primary-dark);
+    margin-bottom: var(--spacing-2);
+}
+
+.albumDesc {
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-8);
+}
+
+/* Photos Grid */
+.photosGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-4);
+}
+
+.photoCard {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-md);
+}
+
+.photoCard:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-xl);
+}
+
+.photoPlaceholder {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+}
+
+.photoCaption {
+    padding: var(--spacing-3);
+    background: var(--color-bg-card);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    text-align: center;
+}
+
+/* Lightbox */
+.lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-8);
+}
+
+.closeBtn {
+    position: absolute;
+    top: var(--spacing-6);
+    right: var(--spacing-6);
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.closeBtn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.closeBtn svg {
+    width: 24px;
+    height: 24px;
+    color: var(--color-text-white);
+}
+
+.lightboxContent {
+    text-align: center;
+}
+
+.lightboxImage {
+    max-width: 90vw;
+    max-height: 70vh;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8rem;
+    padding: var(--spacing-20);
+}
+
+.lightboxCaption {
+    color: var(--color-text-white);
+    font-size: var(--font-size-lg);
+    margin-top: var(--spacing-6);
+}
+
+/* Empty State */
+.empty {
+    text-align: center;
+    padding: var(--spacing-16);
+    color: var(--color-text-muted);
+}
+
+.empty span {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: var(--spacing-4);
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+    .albumsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .photosGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .hero {
+        padding: var(--spacing-16) var(--spacing-4);
+    }
+
+    .heroContent h1 {
+        font-size: var(--font-size-3xl);
+    }
+
+    .albumsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .photosGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
