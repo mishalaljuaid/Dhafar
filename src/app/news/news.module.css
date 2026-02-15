@@ -102,6 +102,12 @@
     opacity: 0.3;
 }
 
+.newsImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .newsContent {
     padding: var(--spacing-6);
 }

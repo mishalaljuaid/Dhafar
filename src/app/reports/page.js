@@ -10,7 +10,11 @@ export default function ReportsPage() {
     const [reports, setReports] = useState([]);
 
     useEffect(() => {
-        setReports(getReports());
+        async function load() {
+            const data = await getReports();
+            setReports(data);
+        }
+        load();
     }, []);
 
     return (
@@ -47,14 +51,29 @@ export default function ReportsPage() {
                                         <span className={styles.reportYear}>{report.year}</span>
                                     </div>
                                     <div className={styles.reportActions}>
-                                        <button className={styles.btnView}>
+                                        <button className={styles.btnView} onClick={() => {
+                                            if (report.pdf_url) {
+                                                window.open(report.pdf_url, '_blank');
+                                            } else {
+                                                alert('لا يوجد ملف PDF مرفق لهذا التقرير');
+                                            }
+                                        }}>
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                                                 <circle cx="12" cy="12" r="3" />
                                             </svg>
                                             عرض
                                         </button>
-                                        <button className={styles.btnDownload}>
+                                        <button className={styles.btnDownload} onClick={() => {
+                                            if (report.pdf_url) {
+                                                const a = document.createElement('a');
+                                                a.href = report.pdf_url;
+                                                a.download = `${report.title}.pdf`;
+                                                a.click();
+                                            } else {
+                                                alert('لا يوجد ملف PDF مرفق لهذا التقرير');
+                                            }
+                                        }}>
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
                                                 <polyline points="7,10 12,15 17,10" />

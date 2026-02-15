@@ -24,18 +24,9 @@
     margin-bottom: var(--spacing-8);
 }
 
-.logo {
-    width: 64px;
-    height: 64px;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
-    border-radius: var(--radius-xl);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-3xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text-white);
+.logoImage {
     margin: 0 auto var(--spacing-4);
+    object-fit: contain;
 }
 
 .cardHeader h1 {

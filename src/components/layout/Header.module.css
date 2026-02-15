@@ -33,18 +33,9 @@
     text-decoration: none;
 }
 
-.logoIcon {
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+.logoImage {
     border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text-white);
-    box-shadow: var(--shadow-md);
+    object-fit: contain;
 }
 
 .logoText {
@@ -53,20 +44,23 @@
 }
 
 .logoTitle {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
-    color: var(--color-text-white);
+    color: var(--color-accent);
     transition: color var(--transition-fast);
+    line-height: 1.2;
 }
 
 .scrolled .logoTitle {
-    color: var(--color-primary-dark);
+    color: var(--color-accent);
 }
 
 .logoSubtitle {
-    font-size: var(--font-size-xs);
+    font-size: 0.8rem;
     color: var(--color-accent);
     font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 /* Navigation */
@@ -74,6 +68,10 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-1);
+}
+
+.mobileMenuLogo {
+    display: none;
 }
 
 .navLink {
@@ -84,7 +82,8 @@
     transition: all var(--transition-fast);
 }
 
-.scrolled .navLink {
+.scrolled .navLink,
+.innerPage .navLink {
     color: var(--color-text);
 }
 
@@ -238,9 +237,27 @@
         padding: var(--spacing-4);
         border-radius: var(--radius-lg);
         font-size: var(--font-size-lg);
+        color: var(--color-text);
+        /* Fix invisible text on white background */
+        width: 100%;
+        text-align: center;
+    }
+
+    .navLink:hover {
+        background: var(--color-primary);
+        color: var(--color-text-white);
     }
 
     .actions {
+        display: flex;
+    }
+
+    .loginBtn {
+        padding: var(--spacing-2) var(--spacing-3);
+        font-size: var(--font-size-sm);
+    }
+
+    .userName {
         display: none;
     }
 
@@ -259,6 +276,44 @@
     }
 
     .logoText {
-        display: none;
+        display: flex;
+    }
+
+    .logoTitle {
+        font-size: var(--font-size-base);
+    }
+
+    .logoSubtitle {
+        font-size: 0.70rem;
+    }
+
+    .mobileMenuLogo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: var(--spacing-6);
+        text-align: center;
+        gap: var(--spacing-2);
+    }
+
+    .mobileLogoImage {
+        object-fit: contain;
+    }
+
+    .mobileLogoText {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .mobileLogoTitle {
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-accent);
+    }
+
+    .mobileLogoSubtitle {
+        font-size: var(--font-size-sm);
+        color: var(--color-accent);
+        font-weight: var(--font-weight-medium);
     }
 }

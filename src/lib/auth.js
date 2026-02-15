@@ -1,141 +1,210 @@
-// Authentication and User Management
-// Uses localStorage for local development - can be replaced with real database
+// ==========================================
+// نظام المصادقة - Authentication
+// يتصل بقاعدة البيانات MySQL عبر API
+// ==========================================
 
-const USERS_KEY = 'dhafar_users';
-const CURRENT_USER_KEY = 'dhafar_user';
+const API_BASE = '/api';
 
-// User roles
-export const ROLES = {
+// ==========================================
+// أدوار المستخدمين
+// ==========================================
+
+export const USER_ROLES = {
     ADMIN: 'admin',
     EDITOR: 'editor',
     MEMBER: 'member',
     GUEST: 'guest',
 };
 
-// Role permissions
-export const PERMISSIONS = {
-    [ROLES.ADMIN]: ['manage_users', 'manage_content', 'view_reports', 'upload_reports', 'manage_gallery', 'manage_news'],
-    [ROLES.EDITOR]: ['manage_content', 'view_reports', 'upload_reports', 'manage_gallery', 'manage_news'],
-    [ROLES.MEMBER]: ['view_content', 'view_reports'],
-    [ROLES.GUEST]: ['view_public'],
+// Alias للتوافق
+export const ROLES = USER_ROLES;
+
+export const ROLE_PERMISSIONS = {
+    admin: ['manage_users', 'manage_content', 'manage_settings', 'view_reports', 'manage_gallery'],
+    editor: ['manage_content', 'view_reports', 'manage_gallery'],
+    member: ['view_content', 'view_reports'],
+    guest: ['view_content'],
 };
 
-// Initialize default admin if none exists
-export function initializeAuth() {
-    if (typeof window === 'undefined') return;
+// ==========================================
+// التهيئة
+// ==========================================
 
-    const users = getUsers();
-    if (users.length === 0) {
-        // Create default admin
-        const defaultAdmin = {
-            id: '1',
-            email: 'admin@dhafar-fund.org',
-            password: 'admin123', // In production, this should be hashed
-            name: 'مدير النظام',
-            role: ROLES.ADMIN,
-            createdAt: new Date().toISOString(),
-        };
-        saveUser(defaultAdmin);
+export async function initializeAuth() {
+    try {
+        // إنشاء حساب أدمن افتراضي إذا لم يوجد
+        const res = await fetch(`${API_BASE}/users`);
+        const users = res.ok ? await res.json() : [];
+
+        if (users.length === 0) {
+            await registerUser({
+                email: 'admin@df.org.sa',
+                password: 'admin123',
+                name: 'مدير النظام',
+                role: 'admin',
+            });
+        }
+    } catch (error) {
+        console.error('خطأ في تهيئة المصادقة:', error);
     }
 }
 
-// Get all users
-export function getUsers() {
-    if (typeof window === 'undefined') return [];
-    const users = localStorage.getItem(USERS_KEY);
-    return users ? JSON.parse(users) : [];
-}
+// ==========================================
+// التسجيل
+// ==========================================
 
-// Save user
-export function saveUser(user) {
-    if (typeof window === 'undefined') return;
-    const users = getUsers();
-    const existingIndex = users.findIndex(u => u.id === user.id);
+export async function registerUser({ email, password, name, role, recaptchaToken, isAdmin = false }) {
+    try {
+        const res = await fetch(`${API_BASE}/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, name, role, recaptchaToken, isAdmin }),
+        });
 
-    if (existingIndex >= 0) {
-        users[existingIndex] = user;
-    } else {
-        users.push(user);
+        const data = await res.json();
+
+        if (!res.ok) {
+            return { success: false, error: data.error };
+        }
+
+        return { success: true, user: data };
+    } catch (error) {
+        return { success: false, error: error.message };
     }
-
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
 }
 
-// Register new user
-export function registerUser({ email, password, name }) {
-    const users = getUsers();
+// ==========================================
+// تسجيل الدخول
+// ==========================================
 
-    // Check if email already exists
-    if (users.find(u => u.email === email)) {
-        throw new Error('البريد الإلكتروني مسجل مسبقاً');
+export async function loginUser({ email, password }) {
+    try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            return { success: false, error: data.error };
+        }
+
+        // حفظ بيانات المستخدم في localStorage (للجلسة)
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('dhafar_current_user', JSON.stringify(data));
+        }
+
+        return { success: true, user: data };
+    } catch (error) {
+        return { success: false, error: error.message };
     }
-
-    const newUser = {
-        id: Date.now().toString(),
-        email,
-        password, // In production, hash this
-        name,
-        role: ROLES.MEMBER,
-        createdAt: new Date().toISOString(),
-    };
-
-    saveUser(newUser);
-    return { ...newUser, password: undefined };
 }
 
-// Login user
-export function loginUser({ email, password }) {
-    const users = getUsers();
-    const user = users.find(u => u.email === email && u.password === password);
+// ==========================================
+// تسجيل الخروج
+// ==========================================
 
-    if (!user) {
-        throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة');
-    }
-
-    // Store current user (without password)
-    const userWithoutPassword = { ...user, password: undefined };
-    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userWithoutPassword));
-
-    return userWithoutPassword;
-}
-
-// Logout user
 export function logoutUser() {
-    if (typeof window === 'undefined') return;
-    localStorage.removeItem(CURRENT_USER_KEY);
+    if (typeof window !== 'undefined') {
+        localStorage.removeItem('dhafar_current_user');
+    }
+    window.location.href = '/';
 }
 
-// Get current user
+// ==========================================
+// المستخدم الحالي
+// ==========================================
+
 export function getCurrentUser() {
     if (typeof window === 'undefined') return null;
-    const user = localStorage.getItem(CURRENT_USER_KEY);
-    return user ? JSON.parse(user) : null;
-}
-
-// Check if user has permission
-export function hasPermission(user, permission) {
-    if (!user) return false;
-    const rolePermissions = PERMISSIONS[user.role] || [];
-    return rolePermissions.includes(permission);
-}
-
-// Update user role (admin only)
-export function updateUserRole(userId, newRole) {
-    const users = getUsers();
-    const userIndex = users.findIndex(u => u.id === userId);
-
-    if (userIndex < 0) {
-        throw new Error('المستخدم غير موجود');
+    try {
+        const data = localStorage.getItem('dhafar_current_user');
+        return data ? JSON.parse(data) : null;
+    } catch {
+        return null;
     }
-
-    users[userIndex].role = newRole;
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    return users[userIndex];
 }
 
-// Delete user (admin only)
-export function deleteUser(userId) {
-    const users = getUsers();
-    const filtered = users.filter(u => u.id !== userId);
-    localStorage.setItem(USERS_KEY, JSON.stringify(filtered));
+export function isLoggedIn() {
+    return getCurrentUser() !== null;
 }
+
+export function isAdmin() {
+    const user = getCurrentUser();
+    return user?.role === 'admin';
+}
+
+// ==========================================
+// الصلاحيات
+// ==========================================
+
+export function hasPermission(permission) {
+    const user = getCurrentUser();
+    if (!user) return false;
+    const perms = ROLE_PERMISSIONS[user.role] || [];
+    return perms.includes(permission);
+}
+
+export function requireAuth() {
+    if (!isLoggedIn()) {
+        if (typeof window !== 'undefined') {
+            window.location.href = '/login';
+        }
+        return false;
+    }
+    return true;
+}
+
+export function requireAdmin() {
+    if (!isAdmin()) {
+        if (typeof window !== 'undefined') {
+            window.location.href = '/';
+        }
+        return false;
+    }
+    return true;
+}
+
+// ==========================================
+// جلب المستخدمين (للأدمن)
+// ==========================================
+
+export async function getUsers() {
+    try {
+        const res = await fetch(`${API_BASE}/users`);
+        if (!res.ok) throw new Error('فشل في جلب المستخدمين');
+        return await res.json();
+    } catch (error) {
+        console.error('خطأ في جلب المستخدمين:', error);
+        return [];
+    }
+}
+
+export async function updateUserRole(userId, newRole) {
+    try {
+        const res = await fetch(`${API_BASE}/users/${userId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: newRole }),
+        });
+        return res.ok;
+    } catch (error) {
+        console.error('خطأ في تحديث الصلاحية:', error);
+        return false;
+    }
+}
+
+export async function deleteUser(userId) {
+    try {
+        const res = await fetch(`${API_BASE}/users/${userId}`, {
+            method: 'DELETE',
+        });
+        return res.ok;
+    } catch (error) {
+        console.error('خطأ في حذف المستخدم:', error);
+        return false;
+    }
+}
+

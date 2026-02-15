@@ -15,13 +15,17 @@ export default function DashboardPage() {
     const [stats, setStats] = useState(null);
 
     useEffect(() => {
-        const currentUser = getCurrentUser();
-        if (!currentUser) {
-            router.push('/login');
-            return;
+        async function load() {
+            const currentUser = getCurrentUser();
+            if (!currentUser) {
+                router.push('/login');
+                return;
+            }
+            setUser(currentUser);
+            const statsData = await getStatistics();
+            setStats(statsData);
         }
-        setUser(currentUser);
-        setStats(getStatistics());
+        load();
     }, [router]);
 
     const handleLogout = () => {

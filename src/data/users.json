@@ -1,0 +1,13 @@
+[
+    {
+        "id": 1,
+        "user_login": "admin",
+        "user_pass": "admin123",
+        "user_nicename": "مدير النظام",
+        "user_email": "admin@dhafar.com",
+        "user_registered": "2024-01-01T00:00:00Z",
+        "user_status": 0,
+        "display_name": "المدير العام",
+        "role": "administrator"
+    }
+]

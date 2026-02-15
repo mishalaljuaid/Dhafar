@@ -29,6 +29,8 @@
     color: rgba(255, 255, 255, 0.8);
     margin-bottom: var(--spacing-6);
     transition: color var(--transition-fast);
+    float: right;
+    text-decoration: none;
 }
 
 .backLink:hover {

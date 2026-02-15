@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { initializeAuth } from '@/lib/auth';
@@ -13,13 +14,18 @@ export default function Home() {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    // Initialize auth and CMS
-    initializeAuth();
-    initializeCMS();
+    async function loadData() {
+      // Initialize auth and CMS
+      await initializeAuth();
+      await initializeCMS();
 
-    // Load data
-    setNews(getNews({ publishedOnly: true, limit: 3 }));
-    setStats(getStatistics());
+      // Load data
+      const newsData = await getNews({ publishedOnly: true, limit: 3 });
+      setNews(newsData);
+      const statsData = await getStatistics();
+      setStats(statsData);
+    }
+    loadData();
   }, []);
 
   const activities = [
@@ -45,11 +51,18 @@ export default function Home() {
     },
   ];
 
+  const showStatsSection = stats && (
+    Number(stats.totalWeddings) > 0 ||
+    Number(stats.totalOrphans) > 0 ||
+    Number(stats.totalBeneficiaries) > 0 ||
+    Number(stats.totalDonations) > 0
+  );
+
   return (
     <>
       <Header />
 
-      <main>
+      <main className={styles.main}>
         {/* Hero Section */}
         <section className={styles.hero}>
           <div className={styles.heroOverlay}></div>
@@ -61,8 +74,8 @@ export default function Home() {
               <span>مسجل لدى المركز الوطني لتنمية القطاع غير الربحي</span>
             </div>
             <p className={styles.heroSubtitle}>
-              صندوق عائلي خيري يسعى لتحقيق التكافل الاجتماعي
-              <br />ونشر الخير بين أفراد العائلة والمجتمع
+              صندوق عائلي يسعى لتحقيق التكافل الاجتماعي
+              <br />ونشر التكافل بين أفراد العائلة والمجتمع
             </p>
             <div className={styles.heroActions}>
               <Link href="/about" className={styles.btnPrimary}>
@@ -80,50 +93,38 @@ export default function Home() {
         </section>
 
         {/* Statistics Section */}
-        {stats && (
+        {showStatsSection && (
           <section className={styles.stats}>
             <div className={styles.container}>
               <div className={styles.statsGrid}>
-                <div className={styles.statCard}>
-                  <div className={styles.statNumber}>{stats.totalWeddings}+</div>
-                  <div className={styles.statLabel}>حفل زواج جماعي</div>
-                </div>
-                <div className={styles.statCard}>
-                  <div className={styles.statNumber}>{stats.totalOrphans}+</div>
-                  <div className={styles.statLabel}>يتيم مكفول</div>
-                </div>
-                <div className={styles.statCard}>
-                  <div className={styles.statNumber}>{stats.totalBeneficiaries.toLocaleString()}+</div>
-                  <div className={styles.statLabel}>مستفيد</div>
-                </div>
-                <div className={styles.statCard}>
-                  <div className={styles.statNumber}>{(stats.totalDonations / 1000000).toFixed(1)}M</div>
-                  <div className={styles.statLabel}>ريال تبرعات</div>
-                </div>
+                {Number(stats.totalWeddings) > 0 && (
+                  <div className={styles.statCard}>
+                    <div className={styles.statNumber}>{stats.totalWeddings}+</div>
+                    <div className={styles.statLabel}>حفل زواج جماعي</div>
+                  </div>
+                )}
+                {Number(stats.totalOrphans) > 0 && (
+                  <div className={styles.statCard}>
+                    <div className={styles.statNumber}>{stats.totalOrphans}+</div>
+                    <div className={styles.statLabel}>يتيم مكفول</div>
+                  </div>
+                )}
+                {Number(stats.totalBeneficiaries) > 0 && (
+                  <div className={styles.statCard}>
+                    <div className={styles.statNumber}>{Number(stats.totalBeneficiaries).toLocaleString()}+</div>
+                    <div className={styles.statLabel}>مستفيد</div>
+                  </div>
+                )}
+                {Number(stats.totalDonations) > 0 && (
+                  <div className={styles.statCard}>
+                    <div className={styles.statNumber}>{Number(stats.totalDonations).toLocaleString()}+</div>
+                    <div className={styles.statLabel}>ريال تبرعات/مساهمات</div>
+                  </div>
+                )}
               </div>
             </div>
           </section>
         )}
-
-        {/* Activities Section */}
-        <section className={styles.activities}>
-          <div className={styles.container}>
-            <div className={styles.sectionHeader}>
-              <h2>أنشطتنا الخيرية</h2>
-              <div className={styles.divider}></div>
-              <p>نعمل على تقديم مجموعة متنوعة من الخدمات لأفراد العائلة والمجتمع</p>
-            </div>
-            <div className={styles.activitiesGrid}>
-              {activities.map((activity, index) => (
-                <div key={index} className={styles.activityCard}>
-                  <div className={styles.activityIcon}>{activity.icon}</div>
-                  <h3>{activity.title}</h3>
-                  <p>{activity.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* News Section */}
         <section className={styles.news}>
@@ -137,16 +138,20 @@ export default function Home() {
               {news.map((item) => (
                 <Link key={item.id} href={`/news/${item.id}`} className={styles.newsCard}>
                   <div className={styles.newsImage}>
-                    <div className={styles.newsImagePlaceholder}>
-                      <span>📰</span>
-                    </div>
+                    {item.image ? (
+                      <img src={item.image} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <div className={styles.newsImagePlaceholder}>
+                        <span>📰</span>
+                      </div>
+                    )}
                   </div>
                   <div className={styles.newsContent}>
                     <span className={styles.newsCategory}>{item.category}</span>
                     <h3>{item.title}</h3>
                     <p>{item.excerpt}</p>
                     <span className={styles.newsDate}>
-                      {new Date(item.createdAt).toLocaleDateString('ar-SA')}
+                      {new Date(item.created_at || item.createdAt).toLocaleDateString('ar-SA')}
                     </span>
                   </div>
                 </Link>
@@ -156,6 +161,26 @@ export default function Home() {
               <Link href="/news" className={styles.btnOutline}>
                 عرض جميع الأخبار
               </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Activities Section */}
+        <section className={styles.activities}>
+          <div className={styles.container}>
+            <div className={styles.sectionHeader}>
+              <h2>أنشطتنا</h2>
+              <div className={styles.divider}></div>
+              <p>نعمل على تقديم مجموعة متنوعة من الخدمات لأفراد العائلة والمجتمع</p>
+            </div>
+            <div className={styles.activitiesGrid}>
+              {activities.map((activity, index) => (
+                <div key={index} className={styles.activityCard}>
+                  <div className={styles.activityIcon}>{activity.icon}</div>
+                  <h3>{activity.title}</h3>
+                  <p>{activity.description}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>

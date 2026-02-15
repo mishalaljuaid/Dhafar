@@ -1,288 +1,336 @@
-// CMS - Content Management System
-// Manages news, reports, gallery, and activities
+// ==========================================
+// نظام إدارة المحتوى - CMS
+// يتصل بقاعدة البيانات MySQL عبر API
+// ==========================================
 
-const STORAGE_KEYS = {
-    NEWS: 'dhafar_news',
-    REPORTS: 'dhafar_reports',
-    GALLERY: 'dhafar_gallery',
-    ACTIVITIES: 'dhafar_activities',
-};
+const API_BASE = '/api';
 
-// Helper: Get items from storage
-function getItems(key) {
-    if (typeof window === 'undefined') return [];
-    const items = localStorage.getItem(key);
-    return items ? JSON.parse(items) : [];
-}
+// ==========================================
+// الأخبار والمقالات
+// ==========================================
 
-// Helper: Save items to storage
-function saveItems(key, items) {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem(key, JSON.stringify(items));
-}
+export async function getNews(options = {}) {
+    try {
+        const params = new URLSearchParams();
+        if (options.limit) params.set('limit', options.limit);
+        if (options.category) params.set('category', options.category);
+        if (options.publishedOnly) params.set('status', 'publish');
 
-// Initialize with sample data
-export function initializeCMS() {
-    if (typeof window === 'undefined') return;
-
-    // Initialize news if empty
-    if (getItems(STORAGE_KEYS.NEWS).length === 0) {
-        const sampleNews = [
-            {
-                id: '1',
-                title: 'إقامة حفل الزواج الجماعي السنوي',
-                excerpt: 'نظم صندوق ظفر حفل الزواج الجماعي السنوي بمشاركة 50 عريساً وعروساً',
-                content: 'نظم صندوق ظفر حفل الزواج الجماعي السنوي الذي شهد مشاركة 50 عريساً وعروساً من أبناء العائلة. وقد أقيم الحفل في قاعة الظفر الكبرى وسط حضور كبير من أفراد العائلة والمسؤولين.',
-                image: '/images/wedding.jpg',
-                category: 'فعاليات',
-                author: 'إدارة الصندوق',
-                createdAt: '2024-01-15T10:00:00Z',
-                published: true,
-            },
-            {
-                id: '2',
-                title: 'توزيع كسوة العيد على الأيتام',
-                excerpt: 'قام الصندوق بتوزيع كسوة العيد على أكثر من 100 يتيم',
-                content: 'في إطار برنامج رعاية الأيتام، قام صندوق ظفر بتوزيع كسوة العيد على أكثر من 100 يتيم من أبناء العائلة، حرصاً على إدخال الفرحة لقلوبهم.',
-                image: '/images/orphans.jpg',
-                category: 'رعاية',
-                author: 'إدارة الصندوق',
-                createdAt: '2024-01-10T10:00:00Z',
-                published: true,
-            },
-            {
-                id: '3',
-                title: 'اجتماع مجلس الإدارة السنوي',
-                excerpt: 'عقد مجلس إدارة الصندوق اجتماعه السنوي لمناقشة خطط العام القادم',
-                content: 'عقد مجلس إدارة صندوق ظفر اجتماعه السنوي لمناقشة إنجازات العام الماضي ووضع خطط العام القادم، وتم استعراض التقرير المالي السنوي.',
-                image: '/images/meeting.jpg',
-                category: 'إداري',
-                author: 'إدارة الصندوق',
-                createdAt: '2024-01-05T10:00:00Z',
-                published: true,
-            },
-        ];
-        saveItems(STORAGE_KEYS.NEWS, sampleNews);
-    }
-
-    // Initialize reports if empty
-    if (getItems(STORAGE_KEYS.REPORTS).length === 0) {
-        const sampleReports = [
-            {
-                id: '1',
-                title: 'التقرير السنوي 2023',
-                year: 2023,
-                summary: 'ملخص أنشطة وإنجازات صندوق ظفر لعام 2023',
-                pdfUrl: '/reports/2023.pdf',
-                createdAt: '2024-01-01T10:00:00Z',
-            },
-            {
-                id: '2',
-                title: 'التقرير السنوي 2022',
-                year: 2022,
-                summary: 'ملخص أنشطة وإنجازات صندوق ظفر لعام 2022',
-                pdfUrl: '/reports/2022.pdf',
-                createdAt: '2023-01-01T10:00:00Z',
-            },
-        ];
-        saveItems(STORAGE_KEYS.REPORTS, sampleReports);
-    }
-
-    // Initialize gallery if empty
-    if (getItems(STORAGE_KEYS.GALLERY).length === 0) {
-        const sampleGallery = [
-            {
-                id: '1',
-                name: 'الزواج الجماعي 2023',
-                description: 'صور من حفل الزواج الجماعي السنوي',
-                photos: [
-                    { id: '1-1', url: '/images/gallery/wedding1.jpg', caption: 'لحظات الفرح' },
-                    { id: '1-2', url: '/images/gallery/wedding2.jpg', caption: 'حفل الزفاف' },
-                ],
-                createdAt: '2024-01-15T10:00:00Z',
-            },
-            {
-                id: '2',
-                name: 'رعاية الأيتام',
-                description: 'صور من برنامج رعاية الأيتام',
-                photos: [
-                    { id: '2-1', url: '/images/gallery/orphans1.jpg', caption: 'توزيع الهدايا' },
-                ],
-                createdAt: '2024-01-10T10:00:00Z',
-            },
-        ];
-        saveItems(STORAGE_KEYS.GALLERY, sampleGallery);
+        const res = await fetch(`${API_BASE}/news?${params}`);
+        if (!res.ok) throw new Error('فشل في جلب الأخبار');
+        return await res.json();
+    } catch (error) {
+        console.error('خطأ في جلب الأخبار:', error);
+        return [];
     }
 }
 
-// ========== NEWS MANAGEMENT ==========
-
-export function getNews(options = {}) {
-    let news = getItems(STORAGE_KEYS.NEWS);
-
-    if (options.publishedOnly) {
-        news = news.filter(n => n.published);
+export async function getNewsById(id) {
+    try {
+        const res = await fetch(`${API_BASE}/news/${id}`);
+        if (!res.ok) return null;
+        return await res.json();
+    } catch (error) {
+        console.error('خطأ في جلب الخبر:', error);
+        return null;
     }
+}
 
-    if (options.category) {
-        news = news.filter(n => n.category === options.category);
+export async function createNews({ title, excerpt, content, image, category }) {
+    try {
+        const user = getCurrentUserFromStorage();
+        const res = await fetch(`${API_BASE}/news`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title,
+                excerpt,
+                content,
+                image,
+                category,
+                authorId: user?.id || 1,
+            }),
+        });
+        if (!res.ok) throw new Error('فشل في إنشاء الخبر');
+        return await res.json();
+    } catch (error) {
+        console.error('خطأ في إنشاء الخبر:', error);
+        return null;
     }
+}
 
-    // Sort by date (newest first)
-    news.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-    if (options.limit) {
-        news = news.slice(0, options.limit);
+export async function updateNews(id, data) {
+    try {
+        const res = await fetch(`${API_BASE}/news/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error('فشل في تعديل الخبر');
+        return await res.json();
+    } catch (error) {
+        console.error('خطأ في تعديل الخبر:', error);
+        return null;
     }
-
-    return news;
 }
 
-export function getNewsById(id) {
-    const news = getItems(STORAGE_KEYS.NEWS);
-    return news.find(n => n.id === id);
+export async function deleteNews(id) {
+    try {
+        const res = await fetch(`${API_BASE}/news/${id}`, { method: 'DELETE' });
+        return res.ok;
+    } catch (error) {
+        console.error('خطأ في حذف الخبر:', error);
+        return false;
+    }
 }
 
-export function createNews({ title, excerpt, content, image, category }) {
-    const news = getItems(STORAGE_KEYS.NEWS);
-    const newItem = {
-        id: Date.now().toString(),
-        title,
-        excerpt,
-        content,
-        image,
-        category,
-        author: 'إدارة الصندوق',
-        createdAt: new Date().toISOString(),
-        published: true,
-    };
-    news.push(newItem);
-    saveItems(STORAGE_KEYS.NEWS, news);
-    return newItem;
+// ==========================================
+// معرض الصور
+// ==========================================
+
+export async function getGallery() {
+    try {
+        const res = await fetch(`${API_BASE}/gallery`);
+        if (!res.ok) throw new Error('فشل في جلب المعرض');
+        return await res.json();
+    } catch (error) {
+        console.error('خطأ في جلب المعرض:', error);
+        return [];
+    }
 }
 
-export function updateNews(id, data) {
-    const news = getItems(STORAGE_KEYS.NEWS);
-    const index = news.findIndex(n => n.id === id);
-    if (index < 0) throw new Error('الخبر غير موجود');
-
-    news[index] = { ...news[index], ...data, updatedAt: new Date().toISOString() };
-    saveItems(STORAGE_KEYS.NEWS, news);
-    return news[index];
+export async function createAlbum({ name, title, description, coverImage, images = [] }) {
+    try {
+        const user = getCurrentUserFromStorage();
+        const res = await fetch(`${API_BASE}/gallery`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: name || title,
+                description,
+                coverImage,
+                images,
+                authorId: user?.id || 1,
+            }),
+        });
+        if (!res.ok) throw new Error('فشل في إنشاء الألبوم');
+        return await res.json();
+    } catch (error) {
+        console.error('خطأ في إنشاء الألبوم:', error);
+        return null;
+    }
 }
 
-export function deleteNews(id) {
-    const news = getItems(STORAGE_KEYS.NEWS);
-    const filtered = news.filter(n => n.id !== id);
-    saveItems(STORAGE_KEYS.NEWS, filtered);
+// ==========================================
+// التقارير
+// ==========================================
+
+export async function getReports() {
+    try {
+        const res = await fetch(`${API_BASE}/reports`);
+        if (!res.ok) throw new Error('فشل في جلب التقارير');
+        return await res.json();
+    } catch (error) {
+        console.error('خطأ في جلب التقارير:', error);
+        return [];
+    }
 }
 
-// ========== REPORTS MANAGEMENT ==========
-
-export function getReports() {
-    const reports = getItems(STORAGE_KEYS.REPORTS);
-    return reports.sort((a, b) => b.year - a.year);
+export async function createReport({ title, year, summary, pdfUrl }) {
+    try {
+        const res = await fetch(`${API_BASE}/reports`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, year, summary, pdfUrl }),
+        });
+        if (!res.ok) throw new Error('فشل في إنشاء التقرير');
+        return await res.json();
+    } catch (error) {
+        console.error('خطأ في إنشاء التقرير:', error);
+        return null;
+    }
 }
 
-export function getReportById(id) {
-    const reports = getItems(STORAGE_KEYS.REPORTS);
-    return reports.find(r => r.id === id);
+export async function deleteReport(id) {
+    try {
+        const res = await fetch(`${API_BASE}/reports/${id}`, { method: 'DELETE' });
+        return res.ok;
+    } catch (error) {
+        console.error('خطأ في حذف التقرير:', error);
+        return false;
+    }
 }
 
-export function createReport({ title, year, summary, pdfUrl }) {
-    const reports = getItems(STORAGE_KEYS.REPORTS);
-    const newReport = {
-        id: Date.now().toString(),
-        title,
-        year,
-        summary,
-        pdfUrl,
-        createdAt: new Date().toISOString(),
-    };
-    reports.push(newReport);
-    saveItems(STORAGE_KEYS.REPORTS, reports);
-    return newReport;
+export async function updateReport(id, data) {
+    try {
+        const res = await fetch(`${API_BASE}/reports/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error('فشل في تعديل التقرير');
+        return await res.json();
+    } catch (error) {
+        console.error('خطأ في تعديل التقرير:', error);
+        return null;
+    }
 }
 
-export function updateReport(id, data) {
-    const reports = getItems(STORAGE_KEYS.REPORTS);
-    const index = reports.findIndex(r => r.id === id);
-    if (index < 0) throw new Error('التقرير غير موجود');
-
-    reports[index] = { ...reports[index], ...data };
-    saveItems(STORAGE_KEYS.REPORTS, reports);
-    return reports[index];
+export async function deleteAlbum(id) {
+    try {
+        const res = await fetch(`${API_BASE}/gallery/${id}`, { method: 'DELETE' });
+        return res.ok;
+    } catch (error) {
+        console.error('خطأ في حذف الألبوم:', error);
+        return false;
+    }
 }
 
-export function deleteReport(id) {
-    const reports = getItems(STORAGE_KEYS.REPORTS);
-    const filtered = reports.filter(r => r.id !== id);
-    saveItems(STORAGE_KEYS.REPORTS, filtered);
+// ==========================================
+// الإحصائيات
+// ==========================================
+
+export async function getStatistics() {
+    try {
+        const [newsRes, galleryRes, reportsRes, settingsRes] = await Promise.all([
+            fetch(`${API_BASE}/news`),
+            fetch(`${API_BASE}/gallery`),
+            fetch(`${API_BASE}/reports`),
+            fetch(`${API_BASE}/settings`),
+        ]);
+
+        const news = newsRes.ok ? await newsRes.json() : [];
+        const gallery = galleryRes.ok ? await galleryRes.json() : [];
+        const reports = reportsRes.ok ? await reportsRes.json() : [];
+        const settings = settingsRes.ok ? await settingsRes.json() : {};
+
+        return {
+            totalNews: news.length,
+            totalAlbums: gallery.length,
+            totalPhotos: gallery.reduce((sum, album) => sum + (album.photos?.length || 0), 0),
+            totalReports: reports.length,
+            totalWeddings: settings.stat_weddings !== undefined ? parseInt(settings.stat_weddings) : 0,
+            totalOrphans: settings.stat_orphans !== undefined ? parseInt(settings.stat_orphans) : 0,
+            totalBeneficiaries: settings.stat_beneficiaries !== undefined ? parseInt(settings.stat_beneficiaries) : 0,
+            totalDonations: settings.stat_donations !== undefined ? parseInt(settings.stat_donations) : 0,
+        };
+    } catch (error) {
+        console.error('خطأ في جلب الإحصائيات:', error);
+        return { totalNews: 0, totalAlbums: 0, totalPhotos: 0, totalReports: 0, totalWeddings: 150, totalOrphans: 200, totalBeneficiaries: 1500, totalDonations: 2500000 };
+    }
 }
 
-// ========== GALLERY MANAGEMENT ==========
+// ==========================================
+// التهيئة - إدخال بيانات تجريبية
+// ==========================================
 
-export function getGallery() {
-    const gallery = getItems(STORAGE_KEYS.GALLERY);
-    return gallery.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+export async function initializeCMS() {
+    try {
+        const res = await fetch(`${API_BASE}/news?limit=1`);
+        const news = res.ok ? await res.json() : [];
+
+        // إذا لا توجد بيانات، ننشئ بيانات تجريبية
+        if (news.length === 0) {
+            await seedSampleData();
+        }
+    } catch (error) {
+        console.error('خطأ في تهيئة CMS:', error);
+    }
 }
 
-export function getAlbumById(id) {
-    const gallery = getItems(STORAGE_KEYS.GALLERY);
-    return gallery.find(a => a.id === id);
+async function seedSampleData() {
+    const sampleNews = [
+        {
+            title: 'صندوق ظفر يقيم حفل الزواج الجماعي السنوي',
+            excerpt: 'أقام صندوق ظفر حفل الزواج الجماعي السنوي بمشاركة 15 عريساً وعروسة',
+            content: 'تحت رعاية كريمة، أقام صندوق ظفر العائلي حفل الزواج الجماعي السنوي، حيث شارك في الحفل 15 عريساً وعروسة من أبناء العائلة...',
+            image: '',
+            category: 'فعاليات',
+        },
+        {
+            title: 'إطلاق برنامج كفالة الأيتام الجديد',
+            excerpt: 'أعلن صندوق ظفر عن إطلاق برنامج جديد لكفالة الأيتام يشمل الدعم التعليمي والمعيشي',
+            content: 'في إطار سعي صندوق ظفر لتوسيع نطاق خدماته الاجتماعية، تم الإعلان عن إطلاق برنامج جديد لكفالة الأيتام...',
+            image: '',
+            category: 'برامج',
+        },
+        {
+            title: 'توزيع المساعدات الموسمية على الأسر المحتاجة',
+            excerpt: 'قام فريق صندوق ظفر بتوزيع المساعدات الموسمية على أكثر من 50 أسرة',
+            content: 'في إطار مبادرات صندوق ظفر للتكافل الاجتماعي، قام فريق العمل بتوزيع المساعدات الموسمية...',
+            image: '',
+            category: 'أخبار',
+        },
+    ];
+
+    for (const item of sampleNews) {
+        await createNews(item);
+    }
 }
 
-export function createAlbum({ name, description }) {
-    const gallery = getItems(STORAGE_KEYS.GALLERY);
-    const newAlbum = {
-        id: Date.now().toString(),
-        name,
-        description,
-        photos: [],
-        createdAt: new Date().toISOString(),
-    };
-    gallery.push(newAlbum);
-    saveItems(STORAGE_KEYS.GALLERY, gallery);
-    return newAlbum;
+// ==========================================
+// الحسابات البنكية
+// ==========================================
+
+export async function getBankAccounts() {
+    try {
+        const res = await fetch(`${API_BASE}/bank-accounts`);
+        if (!res.ok) throw new Error('فشل في جلب الحسابات');
+        return await res.json();
+    } catch (error) {
+        console.error('خطأ في جلب الحسابات:', error);
+        return [];
+    }
 }
 
-export function addPhotoToAlbum(albumId, { url, caption }) {
-    const gallery = getItems(STORAGE_KEYS.GALLERY);
-    const albumIndex = gallery.findIndex(a => a.id === albumId);
-    if (albumIndex < 0) throw new Error('الألبوم غير موجود');
-
-    const photo = {
-        id: Date.now().toString(),
-        url,
-        caption,
-    };
-    gallery[albumIndex].photos.push(photo);
-    saveItems(STORAGE_KEYS.GALLERY, gallery);
-    return photo;
+export async function createBankAccount(data) {
+    try {
+        const res = await fetch(`${API_BASE}/bank-accounts`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error('فشل في إنشاء الحساب');
+        return await res.json();
+    } catch (error) {
+        console.error('خطأ في إنشاء الحساب:', error);
+        return null;
+    }
 }
 
-export function deletePhoto(albumId, photoId) {
-    const gallery = getItems(STORAGE_KEYS.GALLERY);
-    const albumIndex = gallery.findIndex(a => a.id === albumId);
-    if (albumIndex < 0) throw new Error('الألبوم غير موجود');
-
-    gallery[albumIndex].photos = gallery[albumIndex].photos.filter(p => p.id !== photoId);
-    saveItems(STORAGE_KEYS.GALLERY, gallery);
+export async function updateBankAccount(id, data) {
+    try {
+        const res = await fetch(`${API_BASE}/bank-accounts/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error('فشل في تعديل الحساب');
+        return await res.json();
+    } catch (error) {
+        console.error('خطأ في تعديل الحساب:', error);
+        return null;
+    }
 }
 
-export function deleteAlbum(id) {
-    const gallery = getItems(STORAGE_KEYS.GALLERY);
-    const filtered = gallery.filter(a => a.id !== id);
-    saveItems(STORAGE_KEYS.GALLERY, filtered);
+export async function deleteBankAccount(id) {
+    try {
+        const res = await fetch(`${API_BASE}/bank-accounts/${id}`, { method: 'DELETE' });
+        return res.ok;
+    } catch (error) {
+        console.error('خطأ في حذف الحساب:', error);
+        return false;
+    }
 }
 
-// ========== STATISTICS ==========
-
-export function getStatistics() {
-    return {
-        totalWeddings: 150,
-        totalOrphans: 200,
-        totalBeneficiaries: 1500,
-        totalDonations: 2500000,
-    };
+// مساعد - جلب المستخدم الحالي من localStorage
+function getCurrentUserFromStorage() {
+    if (typeof window === 'undefined') return null;
+    try {
+        const data = localStorage.getItem('dhafar_current_user');
+        return data ? JSON.parse(data) : null;
+    } catch {
+        return null;
+    }
 }
+

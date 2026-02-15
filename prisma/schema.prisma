@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// ==========================================
+// جدول المستخدمين (مثل wp_users)
+// ==========================================
+model User {
+  id            Int       @id @default(autoincrement())
+  email         String    @unique
+  password      String
+  name          String
+  role          String    @default("member")
+  avatar        String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  posts         Post[]
+  albums        Album[]
+
+  @@map("users")
+}
+
+// ==========================================
+// جدول المقالات/الأخبار (مثل wp_posts)
+// ==========================================
+model Post {
+  id            Int       @id @default(autoincrement())
+  title         String
+  slug          String    @unique
+  excerpt       String?   @db.Text
+  content       String?   @db.LongText
+  image         String?
+  category      String?
+  status        String    @default("publish")
+  authorId      Int       @map("author_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  author        User      @relation(fields: [authorId], references: [id])
+
+  @@map("posts")
+}
+
+// ==========================================
+// جدول التقارير السنوية
+// ==========================================
+model Report {
+  id            Int       @id @default(autoincrement())
+  title         String
+  year          Int
+  summary       String?   @db.Text
+  pdfUrl        String?   @map("pdf_url")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@map("reports")
+}
+
+// ==========================================
+// جدول الألبومات (معرض الصور)
+// ==========================================
+model Album {
+  id            Int       @id @default(autoincrement())
+  name          String
+  description   String?   @db.Text
+  coverImage    String?   @map("cover_image")
+  authorId      Int       @map("author_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  author        User      @relation(fields: [authorId], references: [id])
+  photos        Photo[]
+
+  @@map("albums")
+}
+
+// ==========================================
+// جدول الصور
+// ==========================================
+model Photo {
+  id            Int       @id @default(autoincrement())
+  url           String
+  caption       String?
+  albumId       Int       @map("album_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  album         Album     @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@map("photos")
+}
+
+// ==========================================
+// جدول أعضاء مجلس الإدارة
+// ==========================================
+model BoardMember {
+  id            Int       @id @default(autoincrement())
+  name          String
+  role          String?
+  image         String?   @db.Text
+  displayOrder  Int       @default(0) @map("display_order")
+
+  @@map("board_members")
+}
+
+// ==========================================
+// جدول رسائل التواصل
+// ==========================================
+model ContactMessage {
+  id            Int       @id @default(autoincrement())
+  name          String
+  email         String
+  phone         String?
+  subject       String
+  message       String    @db.Text
+  createdAt     DateTime  @default(now()) @map("created_at")
+  isRead        Boolean   @default(false) @map("is_read")
+
+  @@map("contact_messages")
+}
+
+// ==========================================
+// جدول إعدادات الموقع
+// ==========================================
+model SiteSetting {
+  id            Int       @id @default(autoincrement())
+  key           String    @unique @map("setting_key")
+  value         String?   @db.Text @map("setting_value")
+  updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}
+
+// ==========================================
+// جدول الحسابات البنكية
+// ==========================================
+model BankAccount {
+  id            Int       @id @default(autoincrement())
+  bankName      String    @map("bank_name")
+  accountName   String    @map("account_name")
+  accountNumber String    @map("account_number")
+  iban          String
+  type          String    // نوع الحساب: زكاة، وقف، تبرعات، إلخ
+  logo          String?   // رابط شعار البنك
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@map("bank_accounts")
+}

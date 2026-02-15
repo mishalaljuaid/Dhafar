@@ -12,8 +12,11 @@ export default function NewsPage() {
     const [filter, setFilter] = useState('all');
 
     useEffect(() => {
-        const allNews = getNews({ publishedOnly: true });
-        setNews(allNews);
+        async function load() {
+            const allNews = await getNews({ publishedOnly: true });
+            setNews(allNews);
+        }
+        load();
     }, []);
 
     const categories = ['all', ...new Set(news.map(n => n.category))];
@@ -56,18 +59,21 @@ export default function NewsPage() {
                             {filteredNews.map(item => (
                                 <Link key={item.id} href={`/news/${item.id}`} className={styles.newsCard}>
                                     <div className={styles.newsImage}>
-                                        <div className={styles.newsImagePlaceholder}>
-                                            <span>📰</span>
-                                        </div>
+                                        {item.image ? (
+                                            <img src={item.image} alt={item.title} className={styles.newsImg} />
+                                        ) : (
+                                            <div className={styles.newsImagePlaceholder}>
+                                                <span>📰</span>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className={styles.newsContent}>
                                         <span className={styles.newsCategory}>{item.category}</span>
                                         <h3>{item.title}</h3>
                                         <p>{item.excerpt}</p>
                                         <div className={styles.newsMeta}>
-                                            <span className={styles.newsAuthor}>{item.author}</span>
                                             <span className={styles.newsDate}>
-                                                {new Date(item.createdAt).toLocaleDateString('ar-SA')}
+                                                {new Date(item.created_at || item.createdAt).toLocaleDateString('ar-SA')}
                                             </span>
                                         </div>
                                     </div>

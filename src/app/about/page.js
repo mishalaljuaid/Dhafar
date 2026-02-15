@@ -1,16 +1,37 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import styles from './about.module.css';
 
 export default function AboutPage() {
-    const teamMembers = [
-        { name: 'أحمد بن محمد', role: 'رئيس مجلس الإدارة', initial: 'أ' },
-        { name: 'خالد بن عبدالله', role: 'نائب الرئيس', initial: 'خ' },
-        { name: 'محمد بن سعيد', role: 'أمين الصندوق', initial: 'م' },
-        { name: 'عبدالرحمن بن علي', role: 'المدير التنفيذي', initial: 'ع' },
-    ];
+    const [teamMembers, setTeamMembers] = useState([]);
+    const [bankAccounts, setBankAccounts] = useState([]);
+
+    useEffect(() => {
+        async function loadData() {
+            try {
+                const [membersRes, accountsRes] = await Promise.all([
+                    fetch('/api/board-members'),
+                    fetch('/api/bank-accounts')
+                ]);
+
+                if (membersRes.ok) {
+                    const data = await membersRes.json();
+                    setTeamMembers(data);
+                }
+
+                if (accountsRes.ok) {
+                    const data = await accountsRes.json();
+                    setBankAccounts(data);
+                }
+            } catch (e) {
+                console.error('خطأ في تحميل البيانات:', e);
+            }
+        }
+        loadData();
+    }, []);
 
     const values = [
         { icon: '💎', title: 'الشفافية', description: 'نلتزم بالشفافية الكاملة في جميع أعمالنا ومعاملاتنا المالية' },
@@ -37,12 +58,12 @@ export default function AboutPage() {
                     <div className={styles.container}>
                         <div className={styles.aboutGrid}>
                             <div className={styles.aboutContent}>
-                                <h2>صندوق ظفر للأعمال الخيرية</h2>
+                                <h2>صندوق ظفر</h2>
                                 <div className={styles.divider}></div>
                                 <p>
-                                    صندوق ظفر هو صندوق عائلي خيري تأسس بهدف تعزيز التكافل الاجتماعي
+                                    صندوق ظفر هو صندوق عائلي تأسس بهدف تعزيز التكافل الاجتماعي
                                     بين أفراد العائلة والمساهمة في خدمة المجتمع من خلال مجموعة
-                                    متنوعة من البرامج والمبادرات الخيرية.
+                                    متنوعة من البرامج والمبادرات.
                                 </p>
                                 <p>
                                     نسعى من خلال الصندوق إلى تقديم المساعدة للمحتاجين، ورعاية
@@ -82,7 +103,7 @@ export default function AboutPage() {
                                 <h3>رسالتنا</h3>
                                 <p>
                                     تعزيز روابط الأخوة والتكافل بين أفراد العائلة من خلال برامج
-                                    خيرية مستدامة تحقق الأثر الإيجابي
+                                    مستدامة تحقق الأثر الإيجابي
                                 </p>
                             </div>
                         </div>
@@ -112,13 +133,17 @@ export default function AboutPage() {
                 <section className={styles.team}>
                     <div className={styles.container}>
                         <div className={styles.sectionHeader}>
-                            <h2>مجلس الإدارة</h2>
+                            <h2>مجلس الأمناء</h2>
                             <div className={styles.divider}></div>
                         </div>
                         <div className={styles.teamGrid}>
                             {teamMembers.map((member, index) => (
-                                <div key={index} className={styles.teamCard}>
-                                    <div className={styles.teamAvatar}>{member.initial}</div>
+                                <div key={member.id || index} className={styles.teamCard}>
+                                    {member.image ? (
+                                        <img src={member.image} alt={member.name} className={styles.teamAvatarImg} />
+                                    ) : (
+                                        <div className={styles.teamAvatar}>{member.name?.charAt(0)}</div>
+                                    )}
                                     <h4>{member.name}</h4>
                                     <p>{member.role}</p>
                                 </div>
@@ -126,6 +151,67 @@ export default function AboutPage() {
                         </div>
                     </div>
                 </section>
+
+                {/* Bank Accounts */}
+                {bankAccounts.length > 0 && (
+                    <section className={styles.bankAccounts}>
+                        <div className={styles.container}>
+                            <div className={styles.sectionHeader}>
+                                <h2>الحسابات البنكية</h2>
+                                <div className={styles.divider}></div>
+                                <p className={styles.sectionDesc}>
+                                    يمكنكم المساهمة ودعم برامج الصندوق من خلال الحسابات التالية
+                                </p>
+                            </div>
+                            <div className={styles.accountsGrid}>
+                                {bankAccounts.map((account) => (
+                                    <div key={account.id} className={styles.accountCard}>
+                                        {/* Right Box: Type & Icon */}
+                                        <div className={styles.accountTypeBox}>
+                                            {account.logo ? (
+                                                <div className={styles.bankIcon} style={{ background: '#fff', padding: '5px', overflow: 'hidden' }}>
+                                                    <img src={account.logo} alt={account.bankName} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                                </div>
+                                            ) : (
+                                                <div className={styles.bankIcon}>🏦</div>
+                                            )}
+                                            <div className={styles.accountType}>{account.type}</div>
+                                        </div>
+
+                                        {/* Left Box: Details */}
+                                        <div className={styles.accountDetailsBox}>
+                                            <div>
+                                                <div className={styles.bankNameTitle}>{account.bankName}</div>
+                                                <div className={styles.accountName}>{account.accountName}</div>
+                                            </div>
+
+                                            <div
+                                                className={styles.ibanRow}
+                                                style={{ marginBottom: '8px' }}
+                                                onClick={() => navigator.clipboard.writeText(account.accountNumber)}
+                                                title="نسخ رقم الحساب"
+                                            >
+                                                <span className={styles.bankNameTitle}>رقم الحساب:</span>
+                                                <span className={styles.ibanText}>{account.accountNumber}</span>
+                                                <span className={styles.copyIcon}>📋</span>
+                                            </div>
+
+                                            <div
+                                                className={styles.ibanRow}
+                                                onClick={() => navigator.clipboard.writeText(account.iban)}
+                                                title="نسخ الآيبان"
+                                            >
+                                                <span className={styles.bankNameTitle}>IBAN:</span>
+                                                <span className={styles.ibanText}>{account.iban}</span>
+                                                <span className={styles.copyIcon}>📋</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                )}
             </main>
 
             <Footer />

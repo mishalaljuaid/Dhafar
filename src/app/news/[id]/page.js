@@ -14,16 +14,19 @@ export default function NewsDetailPage() {
     const [relatedNews, setRelatedNews] = useState([]);
 
     useEffect(() => {
-        if (params.id) {
-            const newsItem = getNewsById(params.id);
-            setNews(newsItem);
+        async function load() {
+            if (params.id) {
+                const newsItem = await getNewsById(params.id);
+                setNews(newsItem);
 
-            if (newsItem) {
-                const related = getNews({ publishedOnly: true, limit: 3 })
-                    .filter(n => n.id !== params.id);
-                setRelatedNews(related);
+                if (newsItem) {
+                    const allNews = await getNews({ publishedOnly: true, limit: 3 });
+                    const related = allNews.filter(n => n.id !== parseInt(params.id));
+                    setRelatedNews(related);
+                }
             }
         }
+        load();
     }, [params.id]);
 
     if (!news) {
@@ -55,9 +58,7 @@ export default function NewsDetailPage() {
                         <span className={styles.category}>{news.category}</span>
                         <h1>{news.title}</h1>
                         <div className={styles.meta}>
-                            <span>{news.author}</span>
-                            <span>•</span>
-                            <span>{new Date(news.createdAt).toLocaleDateString('ar-SA')}</span>
+                            <span>تم النشر في يوم {new Date(news.created_at || news.createdAt).toLocaleDateString('ar-SA', { weekday: 'long' })} الموافق {new Date(news.created_at || news.createdAt).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                         </div>
                     </div>
                 </section>
@@ -66,11 +67,11 @@ export default function NewsDetailPage() {
                 <section className={styles.content}>
                     <div className={styles.container}>
                         <article className={styles.article}>
-                            <div className={styles.featuredImage}>
-                                <div className={styles.imagePlaceholder}>
-                                    <span>📰</span>
+                            {news.image && (
+                                <div className={styles.featuredImage}>
+                                    <img src={news.image} alt={news.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '16px' }} />
                                 </div>
-                            </div>
+                            )}
                             <div className={styles.articleContent}>
                                 <p className={styles.excerpt}>{news.excerpt}</p>
                                 <p>{news.content}</p>

@@ -1,17 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import styles from './Header.module.css';
 
 export default function Header() {
+    const pathname = usePathname();
+    const isHomePage = pathname === '/';
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [user, setUser] = useState(null);
 
     useEffect(() => {
         // Check for logged in user
-        const storedUser = localStorage.getItem('dhafar_user');
+        const storedUser = localStorage.getItem('dhafar_current_user');
         if (storedUser) {
             setUser(JSON.parse(storedUser));
         }
@@ -35,16 +39,36 @@ export default function Header() {
     ];
 
     return (
-        <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
+        <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''} ${!isHomePage ? styles.innerPage : ''}`}>
             <div className={styles.container}>
                 <Link href="/" className={styles.logo}>
-                    <div className={styles.logoIcon}>ظ</div>
+                    <Image
+                        src="/Logo_Dhefar.png"
+                        alt="صندوق ظفر"
+                        width={50}
+                        height={50}
+                        className={styles.logoImage}
+                    />
                     <div className={styles.logoText}>
                         <span className={styles.logoTitle}>صندوق ظفر</span>
+                        <span className={styles.logoSubtitle}>Dhefar Fund</span>
                     </div>
                 </Link>
 
                 <nav className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ''}`}>
+                    <div className={styles.mobileMenuLogo}>
+                        <Image
+                            src="/Logo_Dhefar.png"
+                            alt="صندوق ظفر"
+                            width={80}
+                            height={80}
+                            className={styles.mobileLogoImage}
+                        />
+                        <div className={styles.mobileLogoText}>
+                            <span className={styles.mobileLogoTitle}>صندوق ظفر</span>
+                            <span className={styles.mobileLogoSubtitle}>Dhefar Fund</span>
+                        </div>
+                    </div>
                     {navLinks.map((link) => (
                         <Link
                             key={link.href}

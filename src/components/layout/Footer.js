@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import styles from './Footer.module.css';
 
 export default function Footer() {
@@ -27,14 +28,20 @@ export default function Footer() {
                     {/* About Section */}
                     <div className={styles.column}>
                         <div className={styles.logo}>
-                            <div className={styles.logoIcon}>ظ</div>
+                            <Image
+                                src="/Logo_Dhefar.png"
+                                alt="شعار صندوق ظفر"
+                                width={60}
+                                height={60}
+                                className={styles.logoImage}
+                            />
                             <div className={styles.logoText}>
                                 <span className={styles.logoTitle}>صندوق ظفر</span>
-                                <span className={styles.logoSubtitle}>للأعمال الخيرية</span>
+                                <span className={styles.logoSubtitle}>Dhefar Fund</span>
                             </div>
                         </div>
                         <p className={styles.description}>
-                            صندوق عائلي خيري يسعى لتحقيق التكافل الاجتماعي من خلال
+                            صندوق عائلي يسعى لتحقيق التكافل الاجتماعي من خلال
                             برامج متنوعة تشمل الزواج الجماعي ورعاية الأيتام والمحتاجين.
                         </p>
                         <div className={styles.badge}>
@@ -79,7 +86,7 @@ export default function Footer() {
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                 </svg>
-                                <span>info@dhafar-fund.org</span>
+                                <span>info@df.org.sa</span>
                             </li>
                             <li className={styles.contactItem}>
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -99,9 +106,6 @@ export default function Footer() {
                 </div>
 
                 <div className={styles.bottom}>
-                    <p className={styles.copyright}>
-                        © {currentYear} صندوق ظفر. جميع الحقوق محفوظة.
-                    </p>
                     <div className={styles.socialLinks}>
                         <a href="#" className={styles.socialLink} aria-label="Twitter">
                             <svg viewBox="0 0 24 24" fill="currentColor">
@@ -119,6 +123,9 @@ export default function Footer() {
                             </svg>
                         </a>
                     </div>
+                    <p className={styles.copyright}>
+                        © {currentYear} صندوق ظفر. جميع الحقوق محفوظة.
+                    </p>
                 </div>
             </div>
         </footer>

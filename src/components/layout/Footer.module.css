@@ -26,17 +26,9 @@
     margin-bottom: var(--spacing-4);
 }
 
-.logoIcon {
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-dark));
+.logoImage {
     border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text-white);
+    object-fit: contain;
 }
 
 .logoText {
@@ -47,6 +39,7 @@
 .logoTitle {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
+    color: var(--color-accent);
 }
 
 .logoSubtitle {
@@ -151,9 +144,12 @@
 /* Bottom */
 .bottom {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    padding: var(--spacing-6) 0;
+    justify-content: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-8) 0;
+    text-align: center;
 }
 
 .copyright {

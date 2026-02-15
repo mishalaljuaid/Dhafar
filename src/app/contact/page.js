@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import Script from 'next/script';
 import styles from './contact.module.css';
 
 export default function ContactPage() {
@@ -14,12 +15,72 @@ export default function ContactPage() {
         message: '',
     });
     const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [recaptchaSiteKey, setRecaptchaSiteKey] = useState('');
+    const [recaptchaToken, setRecaptchaToken] = useState('');
+    const recaptchaRef = useRef(null);
 
-    const handleSubmit = (e) => {
+    // جلب مفتاح الموقع للإعدادات
+    useEffect(() => {
+        async function loadSettings() {
+            try {
+                const res = await fetch('/api/settings');
+                if (res.ok) {
+                    const settings = await res.json();
+                    setRecaptchaSiteKey(settings.recaptcha_site_key || '');
+                }
+            } catch (e) {
+                console.error('Error loading settings:', e);
+            }
+        }
+        loadSettings();
+    }, []);
+
+    const onRecaptchaLoad = useCallback(() => {
+        if (window.grecaptcha && recaptchaSiteKey && recaptchaRef.current) {
+            window.grecaptcha.render(recaptchaRef.current, {
+                sitekey: recaptchaSiteKey,
+                callback: (token) => setRecaptchaToken(token),
+                'expired-callback': () => setRecaptchaToken(''),
+                theme: 'light',
+                hl: 'ar',
+            });
+        }
+    }, [recaptchaSiteKey]);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // In production, send to API
-        console.log('Form submitted:', formData);
-        setSubmitted(true);
+        setLoading(true);
+        setError(null);
+
+        if (!recaptchaToken) {
+            setError('يرجى إكمال التحقق (أنا لست روبوت)');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...formData, recaptchaToken }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                setError(data.error || 'حدث خطأ في الإرسال');
+                if (window.grecaptcha) window.grecaptcha.reset();
+                setRecaptchaToken('');
+            } else {
+                setSubmitted(true);
+            }
+        } catch (err) {
+            setError('حدث خطأ غير متوقع، يرجى المحاولة لاحقاً');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleChange = (e) => {
@@ -29,6 +90,18 @@ export default function ContactPage() {
     return (
         <>
             <Header />
+            {recaptchaSiteKey && (
+                <Script
+                    src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit&hl=ar"
+                    strategy="afterInteractive"
+                    onReady={() => {
+                        window.onRecaptchaLoad = onRecaptchaLoad;
+                        if (window.grecaptcha && window.grecaptcha.render) {
+                            onRecaptchaLoad();
+                        }
+                    }}
+                />
+            )}
 
             <main className={styles.main}>
                 {/* Hero */}
@@ -82,7 +155,7 @@ export default function ContactPage() {
                                         </div>
                                         <div>
                                             <h4>البريد الإلكتروني</h4>
-                                            <p>info@dhafar-fund.org</p>
+                                            <p>info@df.org.sa</p>
                                         </div>
                                     </div>
                                 </div>
@@ -113,6 +186,7 @@ export default function ContactPage() {
                                     <form onSubmit={handleSubmit}>
                                         <h2>أرسل لنا رسالة</h2>
                                         <div className={styles.divider}></div>
+                                        {error && <div style={{ color: 'red', marginBottom: '1rem', fontWeight: 'bold' }}>{error}</div>}
 
                                         <div className={styles.formRow}>
                                             <div className={styles.formGroup}>
@@ -180,8 +254,12 @@ export default function ContactPage() {
                                             ></textarea>
                                         </div>
 
-                                        <button type="submit" className={styles.submitBtn}>
-                                            إرسال الرسالة
+                                        <div style={{ margin: '20px 0', display: 'flex', justifyContent: 'center' }}>
+                                            <div ref={recaptchaRef}></div>
+                                        </div>
+
+                                        <button type="submit" className={styles.submitBtn} disabled={loading}>
+                                            {loading ? 'جاري الإرسال...' : 'إرسال الرسالة'}
                                         </button>
                                     </form>
                                 )}

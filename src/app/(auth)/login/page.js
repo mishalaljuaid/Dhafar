@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { loginUser, getCurrentUser, initializeAuth } from '@/lib/auth';
@@ -49,7 +50,13 @@ export default function LoginPage() {
                 <div className={styles.container}>
                     <div className={styles.loginCard}>
                         <div className={styles.cardHeader}>
-                            <div className={styles.logo}>ظ</div>
+                            <Image
+                                src="/Logo_Dhefar.png"
+                                alt="شعار صندوق ظفر"
+                                width={80}
+                                height={80}
+                                className={styles.logoImage}
+                            />
                             <h1>تسجيل الدخول</h1>
                             <p>مرحباً بك في صندوق ظفر</p>
                         </div>
@@ -103,7 +110,7 @@ export default function LoginPage() {
 
                         <div className={styles.demoCredentials}>
                             <p><strong>للتجربة:</strong></p>
-                            <p>البريد: admin@dhafar-fund.org</p>
+                            <p>البريد: admin@df.org.sa</p>
                             <p>كلمة المرور: admin123</p>
                         </div>
                     </div>

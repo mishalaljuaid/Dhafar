@@ -1,0 +1,27 @@
+[
+    {
+        "id": 1,
+        "post_author": 1,
+        "post_date": "2024-01-15T10:00:00Z",
+        "post_title": "الزواج الجماعي 2023",
+        "post_content": "صور من حفل الزواج الجماعي السنوي",
+        "post_status": "publish",
+        "post_name": "wedding-gallery-2023",
+        "post_type": "album",
+        "cover_image": "/images/gallery/wedding1.jpg",
+        "photos": [
+            {
+                "id": 1,
+                "url": "/images/gallery/wedding1.jpg",
+                "caption": "لحظات الفرح",
+                "date": "2024-01-15T10:00:00Z"
+            },
+            {
+                "id": 2,
+                "url": "/images/gallery/wedding2.jpg",
+                "caption": "حفل الزفاف",
+                "date": "2024-01-15T10:00:00Z"
+            }
+        ]
+    }
+]

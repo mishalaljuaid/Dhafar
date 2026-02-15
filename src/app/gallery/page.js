@@ -12,7 +12,11 @@ export default function GalleryPage() {
     const [lightboxPhoto, setLightboxPhoto] = useState(null);
 
     useEffect(() => {
-        setAlbums(getGallery());
+        async function load() {
+            const data = await getGallery();
+            setAlbums(data);
+        }
+        load();
     }, []);
 
     return (

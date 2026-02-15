@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { getCurrentUser, ROLES } from '@/lib/auth';
 import { getGallery, createAlbum, deleteAlbum } from '@/lib/cms';
 import styles from './galleryAdmin.module.css';
@@ -30,31 +31,66 @@ export default function GalleryAdminPage() {
         loadAlbums();
     }, [router]);
 
-    const loadAlbums = () => {
-        setAlbums(getGallery());
+    const loadAlbums = async () => {
+        const data = await getGallery();
+        setAlbums(data);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        createAlbum({
+        await createAlbum({
             ...formData,
             images: formData.images.filter(img => img.trim() !== ''),
         });
         setFormData({ title: '', date: '', description: '', coverImage: '', images: [] });
         setShowForm(false);
-        loadAlbums();
+        await loadAlbums();
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = async (id) => {
         if (confirm('هل أنت متأكد من حذف هذا الألبوم؟')) {
-            deleteAlbum(id);
-            loadAlbums();
+            await deleteAlbum(id);
+            await loadAlbums();
         }
     };
 
     const handleImagesChange = (e) => {
         const urls = e.target.value.split('\n');
         setFormData({ ...formData, images: urls });
+    };
+
+    const handleFileUpload = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
+
+    const onCoverImageFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            try {
+                const base64 = await handleFileUpload(file);
+                setFormData({ ...formData, coverImage: base64 });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    };
+
+    const onPhotosFileChange = async (e) => {
+        const files = Array.from(e.target.files);
+        try {
+            const base64s = await Promise.all(files.map(handleFileUpload));
+            setFormData(prev => ({
+                ...prev,
+                images: [...prev.images, ...base64s]
+            }));
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     if (!user) {
@@ -66,15 +102,23 @@ export default function GalleryAdminPage() {
             {/* Sidebar */}
             <aside className={styles.sidebar}>
                 <div className={styles.sidebarHeader}>
-                    <div className={styles.logo}>ظ</div>
-                    <span>صندوق ظفر</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        <Image src="/Logo_Dhefar.png" width={50} height={50} alt="Logo" style={{ objectFit: 'contain' }} />
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ fontWeight: 'bold', fontSize: '1.2rem', color: '#d4a84b' }}>صندوق ظفر</span>
+                            <span style={{ fontSize: '0.8rem', color: '#d4a84b', letterSpacing: '1px', textTransform: 'uppercase' }}>DHEFAR FUND</span>
+                        </div>
+                    </div>
                 </div>
                 <nav className={styles.nav}>
                     <Link href="/admin" className={styles.navItem}>📊 لوحة التحكم</Link>
                     <Link href="/admin/news" className={styles.navItem}>📰 الأخبار</Link>
                     <Link href="/admin/reports" className={styles.navItem}>📄 التقارير</Link>
                     <Link href="/admin/gallery" className={`${styles.navItem} ${styles.active}`}>📷 المعرض</Link>
+                    <Link href="/admin/board" className={styles.navItem}>👤 مجلس الأمناء</Link>
+                    <Link href="/admin/bank-accounts" className={styles.navItem}>💳 الحسابات البنكية</Link>
                     <Link href="/admin/users" className={styles.navItem}>👥 المستخدمين</Link>
+                    <Link href="/admin/messages" className={styles.navItem}>📩 الرسائل</Link>
                 </nav>
                 <div className={styles.sidebarFooter}>
                     <Link href="/" className={styles.backLink}>العودة للموقع</Link>
@@ -84,7 +128,10 @@ export default function GalleryAdminPage() {
             {/* Main Content */}
             <main className={styles.mainContent}>
                 <header className={styles.header}>
-                    <h1>إدارة معرض الصور</h1>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <Link href="/admin" style={{ background: '#f0f0f0', border: 'none', width: '36px', height: '36px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', textDecoration: 'none', color: '#333' }}>→</Link>
+                        <h1>إدارة معرض الصور</h1>
+                    </div>
                     <button onClick={() => setShowForm(!showForm)} className={styles.addBtn}>
                         {showForm ? 'إلغاء' : '+ إضافة ألبوم'}
                     </button>
@@ -127,22 +174,48 @@ export default function GalleryAdminPage() {
                                 ></textarea>
                             </div>
                             <div className={styles.formGroup}>
-                                <label>رابط صورة الغلاف</label>
-                                <input
-                                    type="text"
-                                    value={formData.coverImage}
-                                    onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-                                    placeholder="رابط صورة الغلاف"
-                                />
+                                <label>صورة الغلاف</label>
+                                <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={onCoverImageFileChange}
+                                        className={styles.fileInput}
+                                    />
+                                    <input
+                                        type="text"
+                                        value={formData.coverImage}
+                                        onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+                                        placeholder="أو رابط صورة الغلاف للوصول السريع"
+                                    />
+                                </div>
+                                {formData.coverImage && <img src={formData.coverImage} alt="Cover Preview" style={{ maxWidth: '100px', marginTop: '5px' }} />}
                             </div>
                             <div className={styles.formGroup}>
-                                <label>روابط الصور (كل رابط في سطر)</label>
-                                <textarea
-                                    value={formData.images.join('\n')}
-                                    onChange={handleImagesChange}
-                                    rows={4}
-                                    placeholder="أدخل روابط الصور، كل رابط في سطر جديد..."
-                                ></textarea>
+                                <label>صور الألبوم</label>
+                                <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        multiple
+                                        onChange={onPhotosFileChange}
+                                        className={styles.fileInput}
+                                    />
+                                    <textarea
+                                        value={formData.images.join('\n')}
+                                        onChange={handleImagesChange}
+                                        rows={4}
+                                        placeholder="أدخل روابط الصور، كل رابط في سطر جديد..."
+                                    ></textarea>
+                                </div>
+                                <div className={styles.imagesPreview} style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginTop: '10px' }}>
+                                    {formData.images.length > 0 && formData.images.slice(0, 5).map((img, i) => (
+                                        <div key={i} style={{ width: '50px', height: '50px', overflow: 'hidden' }}>
+                                            <img src={img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="preview" />
+                                        </div>
+                                    ))}
+                                    {formData.images.length > 5 && <span style={{ alignSelf: 'center' }}>+{formData.images.length - 5}</span>}
+                                </div>
                             </div>
                             <button type="submit" className={styles.submitBtn}>حفظ الألبوم</button>
                         </form>
