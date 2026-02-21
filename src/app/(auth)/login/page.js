@@ -29,10 +29,14 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            const user = loginUser(formData);
-            window.location.href = user.role === 'admin' ? '/admin' : '/dashboard';
+            const result = await loginUser(formData);
+            if (!result.success) {
+                setError(result.error || 'فشل تسجيل الدخول');
+                return;
+            }
+            window.location.href = result.user.role === 'admin' ? '/admin' : '/dashboard';
         } catch (err) {
-            setError(err.message);
+            setError(err.message || 'حدث خطأ غير متوقع');
         } finally {
             setLoading(false);
         }

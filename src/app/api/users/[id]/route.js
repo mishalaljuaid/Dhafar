@@ -1,13 +1,22 @@
 import { NextResponse } from 'next/server';
-import { getUserById, query } from '@/lib/db';
+import { getUserById } from '@/lib/db';
+import prisma from '@/lib/prisma';
 
 // PUT - تعديل صلاحية المستخدم
 export async function PUT(request, { params }) {
     try {
         const { id } = await params;
-        const { role } = await request.json();
+        const body = await request.json();
 
-        await query('UPDATE users SET role = ?, updated_at = NOW() WHERE id = ?', [role, parseInt(id)]);
+        const updateData = {};
+        if (body.role !== undefined) updateData.role = body.role;
+        if (body.name !== undefined) updateData.name = body.name;
+        if (body.email !== undefined) updateData.email = body.email;
+
+        await prisma.user.update({
+            where: { id: parseInt(id) },
+            data: updateData
+        });
 
         const user = await getUserById(parseInt(id));
         return NextResponse.json(user);
@@ -20,7 +29,9 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
     try {
         const { id } = await params;
-        await query('DELETE FROM users WHERE id = ?', [parseInt(id)]);
+        await prisma.user.delete({
+            where: { id: parseInt(id) }
+        });
         return NextResponse.json({ message: 'تم الحذف' });
     } catch (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
