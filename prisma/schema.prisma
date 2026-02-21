@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider  = "postgresql"
 }
 
 // ==========================================
@@ -32,8 +32,8 @@ model Post {
   id            Int       @id @default(autoincrement())
   title         String
   slug          String    @unique
-  excerpt       String?   @db.Text
-  content       String?   @db.LongText
+  excerpt       String?
+  content       String?
   image         String?
   category      String?
   status        String    @default("publish")
@@ -53,7 +53,7 @@ model Report {
   id            Int       @id @default(autoincrement())
   title         String
   year          Int
-  summary       String?   @db.Text
+  summary       String?
   pdfUrl        String?   @map("pdf_url")
   createdAt     DateTime  @default(now()) @map("created_at")
 
@@ -66,7 +66,7 @@ model Report {
 model Album {
   id            Int       @id @default(autoincrement())
   name          String
-  description   String?   @db.Text
+  description   String?
   coverImage    String?   @map("cover_image")
   authorId      Int       @map("author_id")
   createdAt     DateTime  @default(now()) @map("created_at")
@@ -99,7 +99,7 @@ model BoardMember {
   id            Int       @id @default(autoincrement())
   name          String
   role          String?
-  image         String?   @db.Text
+  image         String?
   displayOrder  Int       @default(0) @map("display_order")
 
   @@map("board_members")
@@ -114,7 +114,7 @@ model ContactMessage {
   email         String
   phone         String?
   subject       String
-  message       String    @db.Text
+  message       String
   createdAt     DateTime  @default(now()) @map("created_at")
   isRead        Boolean   @default(false) @map("is_read")
 
@@ -127,7 +127,7 @@ model ContactMessage {
 model SiteSetting {
   id            Int       @id @default(autoincrement())
   key           String    @unique @map("setting_key")
-  value         String?   @db.Text @map("setting_value")
+  value         String?   @map("setting_value")
   updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
 
   @@map("site_settings")

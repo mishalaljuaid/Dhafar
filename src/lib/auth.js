@@ -109,8 +109,9 @@ export async function loginUser({ email, password }) {
 export function logoutUser() {
     if (typeof window !== 'undefined') {
         localStorage.removeItem('dhafar_current_user');
+        navigator.sendBeacon(`${API_BASE}/auth/logout`);
+        window.location.href = '/';
     }
-    window.location.href = '/';
 }
 
 // ==========================================

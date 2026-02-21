@@ -16,7 +16,7 @@ export default function BankAccountsPage() {
         accountName: '',
         accountNumber: '',
         iban: '',
-        type: 'تبرعات',
+        type: '',
         logo: ''
     });
 
@@ -40,7 +40,7 @@ export default function BankAccountsPage() {
             await createBankAccount(formData);
             alert('تم إضافة الحساب بنجاح');
         }
-        setFormData({ bankName: '', accountName: '', accountNumber: '', iban: '', type: 'تبرعات', logo: '' });
+        setFormData({ bankName: '', accountName: '', accountNumber: '', iban: '', type: '', logo: '' });
         setIsEditing(false);
         setCurrentId(null);
         loadAccounts();
@@ -120,14 +120,7 @@ export default function BankAccountsPage() {
                             </div>
                             <div>
                                 <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>نوع الحساب</label>
-                                <select value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px' }}>
-                                    <option value="تبرعات">تبرعات</option>
-                                    <option value="زكاة">زكاة</option>
-                                    <option value="وقف">وقف خيري</option>
-                                    <option value="كفالة أيتام">كفالة أيتام</option>
-                                    <option value="مناسبات">مناسبات</option>
-                                    <option value="أخرى">أخرى</option>
-                                </select>
+                                <input type="text" value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px' }} placeholder="مثال: حساب عام، حساب زكاة، وقف..." />
                                 <div>
                                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>رابط شعار البنك</label>
                                     <input type="text" value={formData.logo} onChange={(e) => setFormData({ ...formData, logo: e.target.value })} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px' }} placeholder="https://example.com/logo.png" />
@@ -144,7 +137,7 @@ export default function BankAccountsPage() {
                                 {isEditing ? 'حفظ التعديلات' : 'إضافة الحساب'}
                             </button>
                             {isEditing && (
-                                <button type="button" onClick={() => { setIsEditing(false); setFormData({ bankName: '', accountName: '', accountNumber: '', iban: '', type: 'تبرعات', logo: '' }); }} style={{ padding: '10px 20px', background: '#ccc', color: '#333', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
+                                <button type="button" onClick={() => { setIsEditing(false); setFormData({ bankName: '', accountName: '', accountNumber: '', iban: '', type: '', logo: '' }); }} style={{ padding: '10px 20px', background: '#ccc', color: '#333', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
                                     إلغاء
                                 </button>
                             )}

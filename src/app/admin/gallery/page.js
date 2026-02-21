@@ -201,6 +201,9 @@ export default function GalleryAdminPage() {
                                         onChange={onPhotosFileChange}
                                         className={styles.fileInput}
                                     />
+                                    <small style={{ color: '#666', fontSize: '12px', marginTop: '-5px' }}>
+                                        ملاحظة: الحد الأقصى لحجم الملف هو 10 ميجابايت. التنسيقات المدعومة: الصور فقط (JPG, PNG, WEBP).
+                                    </small>
                                     <textarea
                                         value={formData.images.join('\n')}
                                         onChange={handleImagesChange}

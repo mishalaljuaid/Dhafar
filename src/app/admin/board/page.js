@@ -162,10 +162,16 @@ export default function BoardAdminPage() {
                                                     if (res.ok) {
                                                         const { url } = await res.json();
                                                         setFormData(prev => ({ ...prev, image: url }));
+                                                    } else {
+                                                        const errorData = await res.json();
+                                                        alert(errorData.error || 'فشل رفع الصورة');
                                                     }
                                                 }
                                             }}
                                         />
+                                        <small style={{ color: '#666', fontSize: '12px', marginTop: '-5px' }}>
+                                            ملاحظة: الحد الأقصى لحجم الملف هو 10 ميجابايت. التنسيقات المدعومة: الصور فقط (JPG, PNG, WEBP).
+                                        </small>
                                         <input
                                             type="text"
                                             value={formData.image}

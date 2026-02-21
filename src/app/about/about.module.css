@@ -148,14 +148,17 @@
 }
 
 .valuesGrid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: var(--spacing-6);
 }
 
 .valueCard {
     text-align: center;
     padding: var(--spacing-6);
+    flex: 1 1 200px;
+    max-width: 250px;
 }
 
 .valueIcon {
@@ -239,8 +242,8 @@
 /* Mobile Responsive */
 @media (max-width: 1024px) {
 
-    .valuesGrid,
-    .teamGrid {
+    .teamGrid,
+    .banksGrid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
@@ -268,8 +271,8 @@
         font-size: var(--font-size-3xl);
     }
 
-    .valuesGrid,
-    .teamGrid {
+    .teamGrid,
+    .banksGrid {
         grid-template-columns: 1fr;
     }
 }
@@ -288,137 +291,140 @@
     line-height: 1.6;
 }
 
-.accountsGrid {
+.banksGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 20px;
-    justify-content: center;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-6);
+    margin-top: var(--spacing-8);
 }
 
-/* Card Design: Right Box (Type) + Left Box (Details) */
-.accountCard {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e2e8f0;
-    display: flex;
+.bankCard {
+    background: var(--color-bg-card);
+    padding: var(--spacing-8);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-card);
+    text-align: center;
+    border: 1px solid var(--color-border-light);
+    transition: all var(--transition-base);
+    position: relative;
     overflow: hidden;
-    height: auto;
-    min-height: 140px;
-    /* Fixed height for consistency */
 }
 
-/* Right Box: Account Type & Bank Logo */
-.accountTypeBox {
-    width: 30%;
-    /* Approx 1/3 width */
-    background: linear-gradient(135deg, #1a5f4a, #2d8a6e);
-    color: #fff;
+.bankTypeBadge {
+    position: absolute;
+    top: 15px;
+    right: -30px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    color: var(--color-text-white);
+    padding: 5px 35px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    transform: rotate(45deg);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.bankCard:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--color-accent);
+}
+
+.bankBrand {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    padding: 15px;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-5);
 }
 
-.bankIcon {
-    font-size: 2rem;
-    margin-bottom: 8px;
-    background: rgba(255, 255, 255, 0.2);
-    width: 80px;
-    height: 80px;
+.bankLogo {
+    height: 60px;
+    max-width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.bankLogo img {
+    width: auto;
+    max-width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.bankLogoPlaceholder {
+    width: 50px;
+    height: 50px;
+    background: rgba(212, 168, 75, 0.1);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.5rem;
+    border: 1px solid rgba(212, 168, 75, 0.3);
 }
 
-.accountType {
-    font-weight: bold;
-    font-size: 1rem;
-    padding: 4px 12px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
+.bankBrand h3 {
+    font-size: var(--font-size-lg);
+    color: var(--color-primary-dark);
+    margin: 0;
 }
 
-/* Left Box: Account Details */
-.accountDetailsBox {
-    flex: 1;
-    padding: 15px 20px;
+.bankDetails {
+    text-align: right;
+    background: rgba(26, 95, 74, 0.03);
+    padding: var(--spacing-5);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(26, 95, 74, 0.1);
+}
+
+.bankDetails p {
+    margin-bottom: var(--spacing-2);
+    font-size: var(--font-size-base);
+    color: var(--color-text);
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 10px;
+    gap: 4px;
 }
 
-.bankNameTitle {
-    color: #64748b;
-    font-size: 0.9rem;
-    margin-bottom: 2px;
-}
-
-.accountName {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #1e293b;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.ibanRow {
-    display: flex;
-    align-items: center;
-    background: #f1f5f9;
-    padding: 8px 12px;
-    border-radius: 8px;
+.copyableRow {
     cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
     transition: background 0.2s;
-    justify-content: space-between;
+    margin: -4px -6px;
 }
 
-.ibanRow:hover {
-    background: #e2e8f0;
-}
-
-.ibanText {
-    font-family: monospace;
-    font-size: 1rem;
-    color: #334155;
-    direction: ltr;
-    /* Force LTR for IBAN */
-    font-weight: 600;
+.copyableRow:hover {
+    background: rgba(26, 95, 74, 0.08);
 }
 
 .copyIcon {
-    font-size: 1rem;
-    color: #64748b;
+    font-size: 1.1em;
+    opacity: 0.5;
+    transition: opacity 0.2s, transform 0.1s;
 }
 
-@media (max-width: 640px) {
-    .accountsGrid {
-        grid-template-columns: 1fr;
-    }
+.copyableRow:hover .copyIcon {
+    opacity: 1;
+    transform: scale(1.1);
+}
 
-    .accountCard {
-        height: auto;
-        flex-direction: column;
-    }
+.bankDetails p:last-child {
+    margin-bottom: 0;
+}
 
-    .accountTypeBox {
-        width: 100%;
-        flex-direction: row;
-        gap: 15px;
-        padding: 10px;
-        justify-content: start;
-    }
+.bankDetails p span:first-child {
+    color: var(--color-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
 
-    .bankIcon {
-        margin-bottom: 0;
-    }
-
-    .accountDetailsBox {
-        padding: 15px;
-    }
+.bankDetails p span[dir="ltr"] {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: var(--font-size-md);
+    color: var(--color-text-dark);
+    letter-spacing: 1px;
 }

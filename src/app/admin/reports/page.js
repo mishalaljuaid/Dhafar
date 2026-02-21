@@ -184,11 +184,15 @@ export default function ReportsAdminPage() {
                                                     const { url } = await res.json();
                                                     setFormData(prev => ({ ...prev, fileUrl: url }));
                                                 } else {
-                                                    alert('فشل رفع الملف');
+                                                    const errorData = await res.json();
+                                                    alert(errorData.error || 'فشل رفع الملف');
                                                 }
                                             }
                                         }}
                                     />
+                                    <small style={{ color: '#666', fontSize: '12px', marginTop: '-5px' }}>
+                                        ملاحظة: الحد الأقصى لحجم الملف هو 10 ميجابايت. التنسيقات المدعومة: PDF فقط.
+                                    </small>
                                     <input
                                         type="text"
                                         value={formData.fileUrl}

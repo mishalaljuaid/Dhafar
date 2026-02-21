@@ -6,12 +6,13 @@ import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { initializeAuth } from '@/lib/auth';
-import { initializeCMS, getNews, getStatistics } from '@/lib/cms';
+import { initializeCMS, getNews, getStatistics, getBankAccounts } from '@/lib/cms';
 import styles from './page.module.css';
 
 export default function Home() {
   const [news, setNews] = useState([]);
   const [stats, setStats] = useState(null);
+  const [bankAccounts, setBankAccounts] = useState([]);
 
   useEffect(() => {
     async function loadData() {
@@ -24,6 +25,8 @@ export default function Home() {
       setNews(newsData);
       const statsData = await getStatistics();
       setStats(statsData);
+      const banksData = await getBankAccounts();
+      setBankAccounts(banksData);
     }
     loadData();
   }, []);
@@ -32,22 +35,52 @@ export default function Home() {
     {
       icon: '💒',
       title: 'الزواج الجماعي',
-      description: 'تنظيم حفلات زواج جماعية لأبناء العائلة لتخفيف أعباء الزواج',
+      description: 'تنظيم حفلات زواج جماعية لتخفيف أعباء الزواج',
     },
     {
       icon: '👶',
-      title: 'رعاية الأيتام',
-      description: 'كفالة الأيتام وتوفير احتياجاتهم التعليمية والمعيشية',
+      title: 'كفالة الايتام',
+      description: 'كفالة الأيتام وتوفير احتياجاتهم ورعايتهم',
     },
     {
       icon: '🤝',
-      title: 'مساعدة المحتاجين',
-      description: 'تقديم المساعدات العينية والمالية للأسر المحتاجة',
+      title: 'التبرعات',
+      description: 'استقبال التبرعات وتوجيهها للمستحقين',
+    },
+    {
+      icon: '🤲',
+      title: 'الزكاة',
+      description: 'استقبال وتوزيع زكاة المال ومصارفها الشرعية',
+    },
+    {
+      icon: '🕊️',
+      title: 'اصلاح ذات البين',
+      description: 'السعي في الإصلاح وتقريب وجهات النظر بين أفراد العائلة',
+    },
+    {
+      icon: '🌙',
+      title: 'السلة الرمضانية',
+      description: 'توفير السلال الغذائية للأسر في شهر رمضان المبارك',
+    },
+    {
+      icon: '🎁',
+      title: 'كسوة العيد',
+      description: 'إدخال الفرحة والسرور بتوفير ملابس العيد',
+    },
+    {
+      icon: '🎒',
+      title: 'الحقيبة المدرسية',
+      description: 'تجهيز الطلاب بالاحتياجات والأدوات المدرسية',
     },
     {
       icon: '📚',
       title: 'الدعم التعليمي',
-      description: 'دعم الطلاب المتفوقين ومساعدتهم في إكمال تعليمهم',
+      description: 'مساعدة الطلاب لمواصلة تعليمهم وتطوير قدراتهم',
+    },
+    {
+      icon: '🕋',
+      title: 'أداء مناسك الحج والعمرة',
+      description: 'تيسير ودعم أداء مناسك الحج والعمرة للمستحقين',
     },
   ];
 
@@ -164,6 +197,67 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Bank Accounts Section */}
+        {bankAccounts && bankAccounts.length > 0 && (
+          <section className={styles.banksSection}>
+            <div className={styles.container}>
+              <div className={styles.sectionHeader}>
+                <h2>الحسابات البنكية</h2>
+                <div className={styles.divider}></div>
+                <p>يمكنكم المساهمة ودعم أنشطة الصندوق عبر حساباتنا البنكية المعتمدة</p>
+              </div>
+              <div className={styles.banksGrid}>
+                {bankAccounts.map((bank) => (
+                  <div key={bank.id} className={styles.bankCard}>
+                    {bank.type && (
+                      <div className={styles.bankTypeBadge}>{bank.type}</div>
+                    )}
+                    <div className={styles.bankBrand}>
+                      {bank.logo ? (
+                        <div className={styles.bankLogo}>
+                          <img src={bank.logo} alt={bank.bankName} />
+                        </div>
+                      ) : (
+                        <>
+                          <div className={styles.bankLogoPlaceholder}>🏦</div>
+                          <h3>{bank.bankName}</h3>
+                        </>
+                      )}
+                    </div>
+                    <div className={styles.bankDetails}>
+                      <p><span>اسم الحساب:</span> {bank.accountName}</p>
+                      <p className={styles.copyableRow} onClick={() => { navigator.clipboard.writeText(bank.accountNumber); }}>
+                        <span>رقم الحساب:</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', direction: 'ltr', justifyContent: 'flex-end' }}>
+                          <span className={styles.copyIcon} title="نسخ رقم الحساب">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                          </span>
+                          <span dir="ltr">{bank.accountNumber}</span>
+                        </div>
+                      </p>
+                      <p className={styles.copyableRow} onClick={() => { navigator.clipboard.writeText(bank.iban); }}>
+                        <span>الآيبان:</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', direction: 'ltr', justifyContent: 'flex-end' }}>
+                          <span className={styles.copyIcon} title="نسخ الآيبان">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                          </span>
+                          <span dir="ltr">{bank.iban}</span>
+                        </div>
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Activities Section */}
         <section className={styles.activities}>

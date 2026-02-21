@@ -143,7 +143,7 @@ export default function ContactPage() {
                                         </div>
                                         <div>
                                             <h4>الهاتف</h4>
-                                            <p>+966 XX XXX XXXX</p>
+                                            <p dir="ltr" style={{ textAlign: 'right' }}>+966 50 572 2433</p>
                                         </div>
                                     </div>
 

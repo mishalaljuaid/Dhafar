@@ -35,6 +35,7 @@ export default function AboutPage() {
 
     const values = [
         { icon: '💎', title: 'الشفافية', description: 'نلتزم بالشفافية الكاملة في جميع أعمالنا ومعاملاتنا المالية' },
+        { icon: '⚖️', title: 'العدالة', description: 'نحرص على تحقيق العدل والإنصاف والمساواة في جميع قراراتنا وبرامجنا' },
         { icon: '🤲', title: 'التكافل', description: 'نسعى لتحقيق التكافل الاجتماعي بين أفراد العائلة' },
         { icon: '⭐', title: 'التميز', description: 'نسعى للتميز في تقديم خدماتنا بأعلى معايير الجودة' },
         { icon: '❤️', title: 'الإنسانية', description: 'نضع الإنسان في صميم اهتماماتنا وأولوياتنا' },
@@ -92,18 +93,16 @@ export default function AboutPage() {
                         <div className={styles.visionGrid}>
                             <div className={styles.visionCard}>
                                 <div className={styles.visionIcon}>👁️</div>
-                                <h3>رؤيتنا</h3>
+                                <h3>الرؤية</h3>
                                 <p>
-                                    أن نكون الصندوق العائلي الرائد في تحقيق التكافل الاجتماعي
-                                    والمساهمة الفاعلة في خدمة المجتمع
+                                    عائلة متماسكة ومزدهرة حيث تحظى كل أسرة بحياة كريمة ومستقبل مشرق.
                                 </p>
                             </div>
                             <div className={styles.visionCard}>
                                 <div className={styles.visionIcon}>🎯</div>
-                                <h3>رسالتنا</h3>
+                                <h3>الرسالة</h3>
                                 <p>
-                                    تعزيز روابط الأخوة والتكافل بين أفراد العائلة من خلال برامج
-                                    مستدامة تحقق الأثر الإيجابي
+                                    نحن صندوق عائلي يسعى إلى دعم الأسر المحتاجة وتعزيز التكافل الإجتماعي من خلال تقديم المساعدات وبناء الشراكات وتعزيز التعليم والتدريب مع الحفاظ على الشفافية والعدالة.
                                 </p>
                             </div>
                         </div>
@@ -163,48 +162,50 @@ export default function AboutPage() {
                                     يمكنكم المساهمة ودعم برامج الصندوق من خلال الحسابات التالية
                                 </p>
                             </div>
-                            <div className={styles.accountsGrid}>
-                                {bankAccounts.map((account) => (
-                                    <div key={account.id} className={styles.accountCard}>
-                                        {/* Right Box: Type & Icon */}
-                                        <div className={styles.accountTypeBox}>
-                                            {account.logo ? (
-                                                <div className={styles.bankIcon} style={{ background: '#fff', padding: '5px', overflow: 'hidden' }}>
-                                                    <img src={account.logo} alt={account.bankName} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                            <div className={styles.banksGrid}>
+                                {bankAccounts.map((bank) => (
+                                    <div key={bank.id} className={styles.bankCard}>
+                                        {bank.type && (
+                                            <div className={styles.bankTypeBadge}>{bank.type}</div>
+                                        )}
+                                        <div className={styles.bankBrand}>
+                                            {bank.logo ? (
+                                                <div className={styles.bankLogo}>
+                                                    <img src={bank.logo} alt={bank.bankName} />
                                                 </div>
                                             ) : (
-                                                <div className={styles.bankIcon}>🏦</div>
+                                                <>
+                                                    <div className={styles.bankLogoPlaceholder}>🏦</div>
+                                                    <h3>{bank.bankName}</h3>
+                                                </>
                                             )}
-                                            <div className={styles.accountType}>{account.type}</div>
                                         </div>
-
-                                        {/* Left Box: Details */}
-                                        <div className={styles.accountDetailsBox}>
-                                            <div>
-                                                <div className={styles.bankNameTitle}>{account.bankName}</div>
-                                                <div className={styles.accountName}>{account.accountName}</div>
-                                            </div>
-
-                                            <div
-                                                className={styles.ibanRow}
-                                                style={{ marginBottom: '8px' }}
-                                                onClick={() => navigator.clipboard.writeText(account.accountNumber)}
-                                                title="نسخ رقم الحساب"
-                                            >
-                                                <span className={styles.bankNameTitle}>رقم الحساب:</span>
-                                                <span className={styles.ibanText}>{account.accountNumber}</span>
-                                                <span className={styles.copyIcon}>📋</span>
-                                            </div>
-
-                                            <div
-                                                className={styles.ibanRow}
-                                                onClick={() => navigator.clipboard.writeText(account.iban)}
-                                                title="نسخ الآيبان"
-                                            >
-                                                <span className={styles.bankNameTitle}>IBAN:</span>
-                                                <span className={styles.ibanText}>{account.iban}</span>
-                                                <span className={styles.copyIcon}>📋</span>
-                                            </div>
+                                        <div className={styles.bankDetails}>
+                                            <p><span>اسم الحساب:</span> {bank.accountName}</p>
+                                            <p className={styles.copyableRow} onClick={() => { navigator.clipboard.writeText(bank.accountNumber); }}>
+                                                <span>رقم الحساب:</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', direction: 'ltr', justifyContent: 'flex-end' }}>
+                                                    <span className={styles.copyIcon} title="نسخ رقم الحساب">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                        </svg>
+                                                    </span>
+                                                    <span dir="ltr">{bank.accountNumber}</span>
+                                                </div>
+                                            </p>
+                                            <p className={styles.copyableRow} onClick={() => { navigator.clipboard.writeText(bank.iban); }}>
+                                                <span>الآيبان:</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', direction: 'ltr', justifyContent: 'flex-end' }}>
+                                                    <span className={styles.copyIcon} title="نسخ الآيبان">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                        </svg>
+                                                    </span>
+                                                    <span dir="ltr">{bank.iban}</span>
+                                                </div>
+                                            </p>
                                         </div>
                                     </div>
                                 ))}

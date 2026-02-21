@@ -32,6 +32,11 @@ export async function POST(request) {
         }
 
         const { password: _, ...safe } = user;
+
+        // إنشاء الجلسة وتعيين الـ Cookie الآمن
+        const { createSession } = await import('@/lib/session');
+        await createSession(safe);
+
         return NextResponse.json(safe);
     } catch (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
