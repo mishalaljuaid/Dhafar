@@ -21,8 +21,7 @@ export async function POST(request) {
             passwordValid = user.password === password;
             // تشفير كلمة المرور القديمة تلقائياً
             if (passwordValid) {
-                const { PrismaClient } = await import('@prisma/client');
-                const prisma = new PrismaClient();
+                const { default: prisma } = await import('@/lib/prisma');
                 const hashed = await bcrypt.hash(password, 10);
                 await prisma.user.update({
                     where: { id: user.id },
