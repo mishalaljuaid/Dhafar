@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getUserByEmail } from '@/lib/db';
 import bcrypt from 'bcryptjs';
+import prisma from '@/lib/prisma';
 
 export async function POST(request) {
     try {
@@ -21,7 +22,6 @@ export async function POST(request) {
             passwordValid = user.password === password;
             // تشفير كلمة المرور القديمة تلقائياً
             if (passwordValid) {
-                const { default: prisma } = await import('@/lib/prisma');
                 const hashed = await bcrypt.hash(password, 10);
                 await prisma.user.update({
                     where: { id: user.id },
