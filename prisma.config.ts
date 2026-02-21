@@ -5,9 +5,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export default defineConfig({
-    earlyAccess: true,
     schema: path.join(__dirname, 'prisma', 'schema.prisma'),
     datasource: {
-        url: process.env.DATABASE_URL,
+        url: process.env.DATABASE_URL || 'postgresql://dummy:dummy@localhost:5432/dummy',
     },
 });
