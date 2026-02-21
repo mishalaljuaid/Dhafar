@@ -112,11 +112,7 @@ export default function LoginPage() {
                             <p>ليس لديك حساب؟ <Link href="/register">سجل الآن</Link></p>
                         </div>
 
-                        <div className={styles.demoCredentials}>
-                            <p><strong>للتجربة:</strong></p>
-                            <p>البريد: admin@df.org.sa</p>
-                            <p>كلمة المرور: admin123</p>
-                        </div>
+
                     </div>
                 </div>
             </main>
