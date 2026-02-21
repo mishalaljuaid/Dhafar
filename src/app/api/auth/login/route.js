@@ -21,9 +21,13 @@ export async function POST(request) {
             passwordValid = user.password === password;
             // تشفير كلمة المرور القديمة تلقائياً
             if (passwordValid) {
-                const { query } = await import('@/lib/db');
+                const { PrismaClient } = await import('@prisma/client');
+                const prisma = new PrismaClient();
                 const hashed = await bcrypt.hash(password, 10);
-                await query('UPDATE users SET password = ? WHERE id = ?', [hashed, user.id]);
+                await prisma.user.update({
+                    where: { id: user.id },
+                    data: { password: hashed }
+                });
             }
         }
 
