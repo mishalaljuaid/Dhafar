@@ -124,7 +124,7 @@ export default function MessagesAdmin() {
                     </Link>
                     <Link href="/admin/messages" className={`${styles.navItem} ${styles.active}`}>
                         <span className={styles.navIcon}>📩</span>
-                        <span>الرسائل</span>
+                        <span>الرسائل الواردة</span>
                     </Link>
                 </nav>
                 <div className={styles.sidebarFooter}>
