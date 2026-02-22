@@ -60,3 +60,16 @@ export async function POST(request) {
         return NextResponse.json({ error: 'حدث خطأ في السيرفر' }, { status: 500 });
     }
 }
+
+export async function PUT(request) {
+    try {
+        await prisma.contactMessage.updateMany({
+            where: { isRead: false },
+            data: { isRead: true }
+        });
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error('Update read status Error:', error);
+        return NextResponse.json({ error: 'حدث خطأ' }, { status: 500 });
+    }
+}

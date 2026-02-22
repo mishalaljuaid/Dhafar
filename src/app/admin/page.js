@@ -32,14 +32,22 @@ export default function AdminPage() {
                 beneficiaries: statsData.totalBeneficiaries,
                 donations: statsData.totalDonations,
             });
-            const [newsData, reportsData, albumsData, usersData] = await Promise.all([
-                getNews(), getReports(), getGallery(), getUsers(),
+            const [newsData, reportsData, albumsData, usersData, messagesRes] = await Promise.all([
+                getNews(), getReports(), getGallery(), getUsers(), fetch('/api/contact')
             ]);
+
+            let unreadCount = 0;
+            if (messagesRes && messagesRes.ok) {
+                const messages = await messagesRes.json();
+                unreadCount = messages.filter(m => !m.isRead).length;
+            }
+
             setContentStats({
                 news: newsData.length,
                 reports: reportsData.length,
                 albums: albumsData.length,
                 users: usersData.length,
+                unreadMessages: unreadCount,
             });
 
             // جلب إعدادات التسجيل
@@ -99,9 +107,9 @@ export default function AdminPage() {
 
     const quickStats = [
         { label: 'الأخبار', value: contentStats.news, icon: '📰', color: '#3b82f6' },
+        { label: 'رسائل جديدة', value: contentStats.unreadMessages || 0, icon: '📩', color: '#ef4444' },
         { label: 'التقارير', value: contentStats.reports, icon: '📄', color: '#10b981' },
         { label: 'الألبومات', value: contentStats.albums, icon: '📷', color: '#f59e0b' },
-        { label: 'المستخدمين', value: contentStats.users, icon: '👥', color: '#8b5cf6' },
     ];
 
     return (

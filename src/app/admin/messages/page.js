@@ -28,6 +28,12 @@ export default function MessagesAdmin() {
             if (res.ok) {
                 const data = await res.json();
                 setMessages(data);
+
+                // Mark messages as read
+                const unreadIds = data.filter(m => !m.isRead).map(m => m.id);
+                if (unreadIds.length > 0) {
+                    await fetch('/api/contact', { method: 'PUT' });
+                }
             }
         } catch (error) {
             console.error('Error fetching messages:', error);
@@ -128,11 +134,14 @@ export default function MessagesAdmin() {
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', paddingBottom: '12px', borderBottom: '1px solid #f3f4f6' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#6b7280', fontSize: '0.875rem' }}>
                                             <span>📅</span>
-                                            <span>{new Date(msg.created_at).toLocaleDateString('ar-SA')}</span>
+                                            <span>{new Date(msg.createdAt).toLocaleDateString('ar-SA')}</span>
+                                            {!msg.isRead && (
+                                                <span style={{ background: '#ef4444', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '10px', marginRight: '6px', fontWeight: 'bold' }}>جديد</span>
+                                            )}
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#6b7280', fontSize: '0.875rem' }}>
                                             <span>⏰</span>
-                                            <span>{new Date(msg.created_at).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>
+                                            <span>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>
                                         </div>
                                     </div>
 
