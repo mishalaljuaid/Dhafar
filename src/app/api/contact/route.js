@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
-import { query, getSetting } from '@/lib/db';
+import { getSetting } from '@/lib/db';
+import prisma from '@/lib/prisma';
 
 export async function GET(request) {
     try {
-        const messages = await query('SELECT * FROM contact_messages ORDER BY created_at DESC');
+        const messages = await prisma.contactMessage.findMany({
+            orderBy: { createdAt: 'desc' }
+        });
         return NextResponse.json(messages);
     } catch (error) {
         console.error('Fetch Messages Error:', error);
@@ -21,13 +24,14 @@ export async function POST(request) {
             return NextResponse.json({ error: 'يرجى ملء جميع الحقول المطلوبة' }, { status: 400 });
         }
 
-        // التحقق من reCAPTCHA
-        if (!recaptchaToken) {
-            return NextResponse.json({ error: 'يرجى إكمال التحقق (أنا لست روبوت)' }, { status: 400 });
-        }
-
         const secretKey = await getSetting('recaptcha_secret_key');
+
+        // التحقق من reCAPTCHA فقط إذا كان هناك مفتاح سري
         if (secretKey) {
+            if (!recaptchaToken) {
+                return NextResponse.json({ error: 'يرجى إكمال التحقق (أنا لست روبوت)' }, { status: 400 });
+            }
+
             const verifyRes = await fetch('https://www.google.com/recaptcha/api/siteverify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -40,10 +44,15 @@ export async function POST(request) {
         }
 
         // حفظ الرسالة في قاعدة البيانات
-        await query(
-            'INSERT INTO contact_messages (name, email, phone, subject, message, created_at) VALUES (?, ?, ?, ?, ?, NOW())',
-            [name, email, phone, subject, message]
-        );
+        await prisma.contactMessage.create({
+            data: {
+                name,
+                email,
+                phone: phone || '',
+                subject,
+                message
+            }
+        });
 
         return NextResponse.json({ success: true, message: 'تم استلام رسالتك بنجاح' });
     } catch (error) {

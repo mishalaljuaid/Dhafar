@@ -54,7 +54,7 @@ export default function ContactPage() {
         setLoading(true);
         setError(null);
 
-        if (!recaptchaToken) {
+        if (recaptchaSiteKey && !recaptchaToken) {
             setError('يرجى إكمال التحقق (أنا لست روبوت)');
             setLoading(false);
             return;
