@@ -239,43 +239,7 @@
     font-size: var(--font-size-sm);
 }
 
-/* Mobile Responsive */
-@media (max-width: 1024px) {
 
-    .teamGrid,
-    .banksGrid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .aboutGrid {
-        grid-template-columns: 1fr;
-    }
-
-    .aboutImage {
-        order: -1;
-    }
-
-    .visionGrid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 640px) {
-    .hero {
-        padding: var(--spacing-16) var(--spacing-4);
-    }
-
-    .heroContent h1 {
-        font-size: var(--font-size-3xl);
-    }
-
-    .teamGrid,
-    .banksGrid {
-        grid-template-columns: 1fr;
-    }
-}
 
 /* Bank Accounts Section */
 .bankAccounts {
@@ -427,4 +391,42 @@
     font-size: var(--font-size-md);
     color: var(--color-text-dark);
     letter-spacing: 1px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+
+    .teamGrid,
+    .banksGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .aboutGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .aboutImage {
+        order: -1;
+    }
+
+    .visionGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .hero {
+        padding: var(--spacing-16) var(--spacing-4);
+    }
+
+    .heroContent h1 {
+        font-size: var(--font-size-3xl);
+    }
+
+    .teamGrid,
+    .banksGrid {
+        grid-template-columns: 1fr;
+    }
 }
