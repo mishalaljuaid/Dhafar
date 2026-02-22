@@ -73,3 +73,25 @@ export async function PUT(request) {
         return NextResponse.json({ error: 'حدث خطأ' }, { status: 500 });
     }
 }
+
+export async function DELETE(request) {
+    try {
+        const body = await request.json();
+        const { ids } = body;
+
+        if (!ids || !Array.isArray(ids) || ids.length === 0) {
+            return NextResponse.json({ error: 'يرجى تحديد الرسائل المراد حذفها' }, { status: 400 });
+        }
+
+        await prisma.contactMessage.deleteMany({
+            where: {
+                id: { in: ids }
+            }
+        });
+
+        return NextResponse.json({ success: true, message: 'تم الحذف بنجاح' });
+    } catch (error) {
+        console.error('Delete Messages Error:', error);
+        return NextResponse.json({ error: 'حدث خطأ أثناء الحذف' }, { status: 500 });
+    }
+}

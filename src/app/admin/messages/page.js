@@ -11,7 +11,40 @@ export default function MessagesAdmin() {
     const router = useRouter();
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedIds, setSelectedIds] = useState([]);
 
+    const toggleSelection = (id) => {
+        setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedIds.length === messages.length) {
+            setSelectedIds([]);
+        } else {
+            setSelectedIds(messages.map(m => m.id));
+        }
+    };
+
+    const handleDelete = async (ids) => {
+        if (!confirm('هل أنت متأكد من حذف الرسائل المحددة؟ لا يمكن التراجع عن هذا الإجراء.')) return;
+
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids })
+            });
+            if (res.ok) {
+                setMessages(messages.filter(m => !ids.includes(m.id)));
+                setSelectedIds([]);
+            } else {
+                alert('حدث خطأ أثناء الحذف');
+            }
+        } catch (error) {
+            console.error('Delete error', error);
+            alert('حدث خطأ أثناء الحذف');
+        }
+    };
     useEffect(() => {
         const user = getCurrentUser();
         if (!user || user.role !== ROLES.ADMIN) {
@@ -107,6 +140,29 @@ export default function MessagesAdmin() {
                         <Link href="/admin" style={{ background: '#f0f0f0', border: 'none', width: '36px', height: '36px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', textDecoration: 'none', color: '#333' }}>→</Link>
                         <h1>الرسائل الواردة</h1>
                     </div>
+                    {messages.length > 0 && (
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', background: '#f9fafb', padding: '8px 12px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                                <input
+                                    type="checkbox"
+                                    checked={selectedIds.length === messages.length && messages.length > 0}
+                                    onChange={toggleSelectAll}
+                                    style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                                />
+                                تحديد الكل
+                            </label>
+
+                            {selectedIds.length > 0 && (
+                                <button
+                                    onClick={() => handleDelete(selectedIds)}
+                                    style={{ background: '#ef4444', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', fontWeight: 'bold' }}
+                                >
+                                    <span>🗑️</span>
+                                    حذف المحدد ({selectedIds.length})
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </header>
 
                 {loading ? (
@@ -130,18 +186,35 @@ export default function MessagesAdmin() {
                                     flexDirection: 'column',
                                     gap: '12px'
                                 }}>
-                                    {/* Header: Date */}
+                                    {/* Header: Date & Selection */}
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', paddingBottom: '12px', borderBottom: '1px solid #f3f4f6' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#6b7280', fontSize: '0.875rem' }}>
-                                            <span>📅</span>
-                                            <span>{new Date(msg.createdAt).toLocaleDateString('ar-SA')}</span>
-                                            {!msg.isRead && (
-                                                <span style={{ background: '#ef4444', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '10px', marginRight: '6px', fontWeight: 'bold' }}>جديد</span>
-                                            )}
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedIds.includes(msg.id)}
+                                                onChange={() => toggleSelection(msg.id)}
+                                                style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                                            />
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#6b7280', fontSize: '0.875rem' }}>
+                                                <span>📅</span>
+                                                <span>{new Date(msg.createdAt).toLocaleDateString('ar-SA')}</span>
+                                                {!msg.isRead && (
+                                                    <span style={{ background: '#ef4444', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '10px', marginRight: '6px', fontWeight: 'bold' }}>جديد</span>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#6b7280', fontSize: '0.875rem' }}>
-                                            <span>⏰</span>
-                                            <span>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#6b7280', fontSize: '0.875rem' }}>
+                                                <span>⏰</span>
+                                                <span>{new Date(msg.createdAt).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</span>
+                                            </div>
+                                            <button
+                                                onClick={() => handleDelete([msg.id])}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', opacity: 0.6, hover: { opacity: 1 } }}
+                                                title="حذف الرسالة"
+                                            >
+                                                🗑️
+                                            </button>
                                         </div>
                                     </div>
 
