@@ -104,7 +104,7 @@ export default function Home() {
               صندوق <span className={styles.heroAccent}>ظفر</span>
             </h1>
             <div className={styles.heroBadge}>
-              <span>مسجل لدى المركز الوطني لتنمية القطاع غير الربحي</span>
+              <span>مسجل لدى المركز الوطني لتنمية القطاع غير الربحي برقم 1200739000</span>
             </div>
             <p className={styles.heroSubtitle}>
               صندوق عائلي يسعى لتحقيق التكافل الاجتماعي

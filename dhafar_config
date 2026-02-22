@@ -1,0 +1,51 @@
+server {
+    server_name df.org.sa www.df.org.sa 76.13.44.128;
+
+    location /uploads/ {
+        alias /var/www/dhafar/public/uploads/;
+        access_log off;
+        expires max;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 86400;
+    }
+
+    client_max_body_size 50M;
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/df.org.sa/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/df.org.sa/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+server {
+    if ($host = www.df.org.sa) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = df.org.sa) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name df.org.sa www.df.org.sa 76.13.44.128;
+    return 404; # managed by Certbot
+
+
+
+
+}
