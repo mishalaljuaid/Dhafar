@@ -230,7 +230,7 @@ export default function Home() {
                     </div>
                     <div className={styles.bankDetails}>
                       <p><span>اسم الحساب:</span> {bank.accountName}</p>
-                      <p className={styles.copyableRow} onClick={() => { navigator.clipboard.writeText(bank.accountNumber); }}>
+                      <div className={styles.copyableRow} onClick={() => { navigator.clipboard.writeText(bank.accountNumber); }}>
                         <span>رقم الحساب:</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', direction: 'ltr', justifyContent: 'flex-end' }}>
                           <span className={styles.copyIcon} title="نسخ رقم الحساب">
@@ -241,8 +241,8 @@ export default function Home() {
                           </span>
                           <span dir="ltr">{bank.accountNumber}</span>
                         </div>
-                      </p>
-                      <p className={styles.copyableRow} onClick={() => { navigator.clipboard.writeText(bank.iban); }}>
+                      </div>
+                      <div className={styles.copyableRow} onClick={() => { navigator.clipboard.writeText(bank.iban); }}>
                         <span>الآيبان:</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', direction: 'ltr', justifyContent: 'flex-end' }}>
                           <span className={styles.copyIcon} title="نسخ الآيبان">
@@ -253,7 +253,7 @@ export default function Home() {
                           </span>
                           <span dir="ltr">{bank.iban}</span>
                         </div>
-                      </p>
+                      </div>
                     </div>
                   </div>
                 ))}
