@@ -20,6 +20,9 @@
 .heroContent {
     max-width: 800px;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .backLink {
@@ -29,7 +32,7 @@
     color: rgba(255, 255, 255, 0.8);
     margin-bottom: var(--spacing-6);
     transition: color var(--transition-fast);
-    float: right;
+    align-self: flex-start; /* Changed from flex-end to flex-start for right-to-left layout */
     text-decoration: none;
 }
 
@@ -59,7 +62,6 @@
     line-height: var(--line-height-relaxed);
     text-align: center;
     max-width: 90%;
-    clear: both;
 }
 
 .meta {
