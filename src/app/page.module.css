@@ -395,10 +395,6 @@
   border-color: var(--color-accent);
 }
 
-.activityIcon {
-  font-size: 3rem;
-  margin-bottom: var(--spacing-4);
-}
 
 .activityCard h3 {
   font-size: var(--font-size-xl);

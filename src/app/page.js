@@ -273,7 +273,6 @@ export default function Home() {
             <div className={styles.activitiesGrid}>
               {activities.map((activity, index) => (
                 <div key={index} className={styles.activityCard}>
-                  <div className={styles.activityIcon}>{activity.icon}</div>
                   <h3>{activity.title}</h3>
                   <p>{activity.description}</p>
                 </div>
