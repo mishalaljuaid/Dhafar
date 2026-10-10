@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getCurrentUser, logoutUser, getUsers, ROLES } from '@/lib/auth';
 import { getNews, getReports, getGallery, getStatistics } from '@/lib/cms';
+import { clearSiteSettingsCache } from '@/lib/useSiteSettings';
 import styles from './admin.module.css';
 
 export default function AdminPage() {
@@ -15,6 +16,7 @@ export default function AdminPage() {
     const [statsForm, setStatsForm] = useState({ weddings: 0, orphans: 0, beneficiaries: 0, donations: 0 });
     const [contentStats, setContentStats] = useState({});
     const [registrationOpen, setRegistrationOpen] = useState(false);
+    const [galleryEnabled, setGalleryEnabled] = useState(false);
 
     useEffect(() => {
         async function load() {
@@ -56,6 +58,7 @@ export default function AdminPage() {
                 if (settingsRes.ok) {
                     const settings = await settingsRes.json();
                     setRegistrationOpen(settings.registration_open === 'true');
+                    setGalleryEnabled(settings.gallery_enabled === 'true');
                 }
             } catch (e) { console.error(e); }
         }
@@ -98,8 +101,10 @@ export default function AdminPage() {
         { href: '/admin', icon: '📊', label: 'لوحة التحكم', active: true },
         { href: '/admin/news', icon: '📰', label: 'إدارة الأخبار' },
         { href: '/admin/reports', icon: '📄', label: 'إدارة التقارير' },
+        { href: '/admin/policies', icon: '📑', label: 'السياسات واللوائح' },
         { href: '/admin/gallery', icon: '📷', label: 'إدارة المعرض' },
         { href: '/admin/board', icon: '👤', label: 'مجلس الأمناء' },
+        { href: '/admin/executive-council', icon: '🧑‍💼', label: 'المجلس التنفيذي' },
         { href: '/admin/bank-accounts', icon: '💳', label: 'الحسابات البنكية' },
         { href: '/admin/users', icon: '👥', label: 'إدارة المستخدمين' },
         { href: '/admin/messages', icon: '📩', label: 'الرسائل الواردة' },
@@ -240,6 +245,58 @@ export default function AdminPage() {
                                     position: 'absolute',
                                     top: '3px',
                                     right: registrationOpen ? '3px' : '27px',
+                                    transition: 'right 0.3s ease',
+                                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                                }} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* إظهار / إخفاء معرض الصور */}
+                    <div style={{ background: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '12px' }}>
+                        <div>
+                            <strong style={{ fontSize: '16px' }}>معرض الصور</strong>
+                            <p style={{ color: '#888', fontSize: '14px', marginTop: '4px' }}>إظهار صفحة معرض الصور ورابطها في قائمة الموقع والفوتر</p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <span style={{ fontSize: '14px', fontWeight: 'bold', color: galleryEnabled ? '#1a5f4a' : '#dc2626' }}>
+                                {galleryEnabled ? '👁️ ظاهر' : '🚫 مخفي'}
+                            </span>
+                            <div
+                                role="switch"
+                                aria-checked={galleryEnabled}
+                                onClick={async () => {
+                                    const newVal = !galleryEnabled;
+                                    const res = await fetch('/api/settings', {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ gallery_enabled: newVal ? 'true' : 'false' }),
+                                    });
+                                    if (res.ok) {
+                                        clearSiteSettingsCache();
+                                        setGalleryEnabled(newVal);
+                                    } else {
+                                        alert('تعذر حفظ الإعداد');
+                                    }
+                                }}
+                                style={{
+                                    width: '52px',
+                                    height: '28px',
+                                    borderRadius: '14px',
+                                    background: galleryEnabled ? '#1a5f4a' : '#ccc',
+                                    cursor: 'pointer',
+                                    position: 'relative',
+                                    transition: 'background 0.3s ease',
+                                }}
+                            >
+                                <div style={{
+                                    width: '22px',
+                                    height: '22px',
+                                    borderRadius: '50%',
+                                    background: '#fff',
+                                    position: 'absolute',
+                                    top: '3px',
+                                    right: galleryEnabled ? '3px' : '27px',
                                     transition: 'right 0.3s ease',
                                     boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
                                 }} />

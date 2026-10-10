@@ -180,6 +180,42 @@ export async function updateReport(id, data) {
 }
 
 // ==========================================
+// السياسات واللوائح
+// ==========================================
+export async function getPolicies() {
+    return await prisma.policy.findMany({
+        orderBy: [{ displayOrder: 'asc' }, { createdAt: 'asc' }]
+    });
+}
+
+export async function createPolicy({ title, pdfUrl, displayOrder }) {
+    return await prisma.policy.create({
+        data: {
+            title,
+            pdfUrl: pdfUrl || '',
+            displayOrder: parseInt(displayOrder) || 0
+        }
+    });
+}
+
+export async function updatePolicy(id, data) {
+    const updateData = {};
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.pdfUrl !== undefined) updateData.pdfUrl = data.pdfUrl;
+    if (data.displayOrder !== undefined) updateData.displayOrder = parseInt(data.displayOrder) || 0;
+
+    return await prisma.policy.update({
+        where: { id: parseInt(id) },
+        data: updateData
+    });
+}
+
+export async function deletePolicy(id) {
+    await prisma.policy.delete({ where: { id: parseInt(id) } });
+    return true;
+}
+
+// ==========================================
 // أعضاء مجلس الإدارة
 // ==========================================
 export async function getBoardMembers() {
@@ -217,6 +253,44 @@ export async function updateBoardMember(id, data) {
 
 export async function deleteBoardMember(id) {
     await prisma.boardMember.delete({ where: { id: parseInt(id) } });
+    return true;
+}
+
+// ==========================================
+// المجلس التنفيذي
+// ==========================================
+export async function getExecutiveMembers() {
+    return await prisma.executiveMember.findMany({
+        orderBy: [{ displayOrder: 'asc' }, { id: 'asc' }]
+    });
+}
+
+export async function createExecutiveMember({ name, role, image, display_order }) {
+    return await prisma.executiveMember.create({
+        data: {
+            name,
+            role: role || '',
+            image: image || '',
+            displayOrder: parseInt(display_order) || 0
+        }
+    });
+}
+
+export async function updateExecutiveMember(id, data) {
+    const updateData = {};
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.role !== undefined) updateData.role = data.role;
+    if (data.image !== undefined) updateData.image = data.image;
+    if (data.display_order !== undefined) updateData.displayOrder = parseInt(data.display_order) || 0;
+
+    return await prisma.executiveMember.update({
+        where: { id: parseInt(id) },
+        data: updateData
+    });
+}
+
+export async function deleteExecutiveMember(id) {
+    await prisma.executiveMember.delete({ where: { id: parseInt(id) } });
     return true;
 }
 
@@ -314,7 +388,9 @@ export default {
     getPosts, getPostById, createPost, updatePost, deletePost,
     getAlbums, createAlbum, deleteAlbum,
     getReports, createReport, updateReport, deleteReport,
+    getPolicies, createPolicy, updatePolicy, deletePolicy,
     getBoardMembers, createBoardMember, updateBoardMember, deleteBoardMember,
+    getExecutiveMembers, createExecutiveMember, updateExecutiveMember, deleteExecutiveMember,
     getSetting, getSettings, updateSetting,
     getBankAccounts, getBankAccountById, createBankAccount, updateBankAccount, deleteBankAccount
 };

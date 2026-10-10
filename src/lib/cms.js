@@ -176,6 +176,61 @@ export async function updateReport(id, data) {
     }
 }
 
+// ==========================================
+// السياسات واللوائح
+// ==========================================
+
+export async function getPolicies() {
+    try {
+        const res = await fetch(`${API_BASE}/policies`);
+        if (!res.ok) throw new Error('فشل في جلب السياسات');
+        return await res.json();
+    } catch (error) {
+        console.error('خطأ في جلب السياسات:', error);
+        return [];
+    }
+}
+
+export async function createPolicy(data) {
+    try {
+        const res = await fetch(`${API_BASE}/policies`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error('فشل في إضافة السياسة');
+        return await res.json();
+    } catch (error) {
+        console.error('خطأ في إضافة السياسة:', error);
+        return null;
+    }
+}
+
+export async function updatePolicy(id, data) {
+    try {
+        const res = await fetch(`${API_BASE}/policies/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error('فشل في تعديل السياسة');
+        return await res.json();
+    } catch (error) {
+        console.error('خطأ في تعديل السياسة:', error);
+        return null;
+    }
+}
+
+export async function deletePolicy(id) {
+    try {
+        const res = await fetch(`${API_BASE}/policies/${id}`, { method: 'DELETE' });
+        return res.ok;
+    } catch (error) {
+        console.error('خطأ في حذف السياسة:', error);
+        return false;
+    }
+}
+
 export async function deleteAlbum(id) {
     try {
         const res = await fetch(`${API_BASE}/gallery/${id}`, { method: 'DELETE' });

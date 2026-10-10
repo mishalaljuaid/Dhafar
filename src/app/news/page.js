@@ -1,29 +1,47 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { getNews } from '@/lib/cms';
+import { NEWS_CATEGORIES, getCategoryBySlug } from '@/lib/newsCategories';
 import styles from './news.module.css';
 
 export default function NewsPage() {
+    return (
+        <Suspense fallback={null}>
+            <NewsPageContent />
+        </Suspense>
+    );
+}
+
+function NewsPageContent() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
     const [news, setNews] = useState([]);
-    const [filter, setFilter] = useState('all');
+    const [loading, setLoading] = useState(true);
+
+    // التصنيف الحالي من الرابط: /news?type=events
+    const activeCategory = getCategoryBySlug(searchParams.get('type'));
 
     useEffect(() => {
         async function load() {
             const allNews = await getNews({ publishedOnly: true });
-            setNews(allNews);
+            setNews(Array.isArray(allNews) ? allNews : []);
+            setLoading(false);
         }
         load();
     }, []);
 
-    const categories = ['all', ...new Set(news.map(n => n.category))];
+    const filteredNews = activeCategory
+        ? news.filter(n => n.category === activeCategory.value)
+        : news;
 
-    const filteredNews = filter === 'all'
-        ? news
-        : news.filter(n => n.category === filter);
+    const selectCategory = (slug) => {
+        router.replace(slug ? `/news?type=${slug}` : '/news', { scroll: false });
+    };
 
     return (
         <>
@@ -33,8 +51,8 @@ export default function NewsPage() {
                 {/* Hero */}
                 <section className={styles.hero}>
                     <div className={styles.heroContent}>
-                        <h1>الأخبار</h1>
-                        <p>تابع آخر أخبار وفعاليات صندوق ظفر</p>
+                        <h1>المركز الإعلامي</h1>
+                        <p>{activeCategory ? activeCategory.label : 'تابع آخر أخبار وفعاليات صندوق ظفر'}</p>
                     </div>
                 </section>
 
@@ -43,13 +61,19 @@ export default function NewsPage() {
                     <div className={styles.container}>
                         {/* Filters */}
                         <div className={styles.filters}>
-                            {categories.map(cat => (
+                            <button
+                                className={`${styles.filterBtn} ${!activeCategory ? styles.active : ''}`}
+                                onClick={() => selectCategory(null)}
+                            >
+                                الكل
+                            </button>
+                            {NEWS_CATEGORIES.map(cat => (
                                 <button
-                                    key={cat}
-                                    className={`${styles.filterBtn} ${filter === cat ? styles.active : ''}`}
-                                    onClick={() => setFilter(cat)}
+                                    key={cat.slug}
+                                    className={`${styles.filterBtn} ${activeCategory?.slug === cat.slug ? styles.active : ''}`}
+                                    onClick={() => selectCategory(cat.slug)}
                                 >
-                                    {cat === 'all' ? 'الكل' : cat}
+                                    {cat.label}
                                 </button>
                             ))}
                         </div>
@@ -81,7 +105,7 @@ export default function NewsPage() {
                             ))}
                         </div>
 
-                        {filteredNews.length === 0 && (
+                        {!loading && filteredNews.length === 0 && (
                             <div className={styles.empty}>
                                 <span>📭</span>
                                 <p>لا توجد أخبار في هذا التصنيف</p>

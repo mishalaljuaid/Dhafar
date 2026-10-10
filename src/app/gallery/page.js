@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { getGallery } from '@/lib/cms';
+import { useSiteSettings, isGalleryEnabled } from '@/lib/useSiteSettings';
 import styles from './gallery.module.css';
 
 export default function GalleryPage() {
     const [albums, setAlbums] = useState([]);
     const [selectedAlbum, setSelectedAlbum] = useState(null);
     const [lightboxPhoto, setLightboxPhoto] = useState(null);
+    const siteSettings = useSiteSettings();
 
     useEffect(() => {
         async function load() {
@@ -18,6 +20,24 @@ export default function GalleryPage() {
         }
         load();
     }, []);
+
+    // المعرض معطّل من لوحة التحكم
+    if (siteSettings && !isGalleryEnabled(siteSettings)) {
+        return (
+            <>
+                <Header />
+                <main className={styles.main}>
+                    <section className={styles.hero}>
+                        <div className={styles.heroContent}>
+                            <h1>معرض الصور</h1>
+                            <p>هذه الصفحة غير متاحة حالياً</p>
+                        </div>
+                    </section>
+                </main>
+                <Footer />
+            </>
+        );
+    }
 
     return (
         <>

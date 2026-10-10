@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getCurrentUser, ROLES } from '@/lib/auth';
 import { getNews, createNews, updateNews, deleteNews } from '@/lib/cms';
+import { NEWS_CATEGORIES } from '@/lib/newsCategories';
 import styles from './newsAdmin.module.css';
 
 export default function NewsAdminPage() {
@@ -18,7 +19,7 @@ export default function NewsAdminPage() {
         title: '',
         excerpt: '',
         content: '',
-        category: 'فعاليات',
+        category: 'أخبار',
         image: '',
     });
 
@@ -38,7 +39,7 @@ export default function NewsAdminPage() {
     };
 
     const resetForm = () => {
-        setFormData({ title: '', excerpt: '', content: '', category: 'فعاليات', image: '' });
+        setFormData({ title: '', excerpt: '', content: '', category: 'أخبار', image: '' });
         setEditingId(null);
         setShowForm(false);
     };
@@ -59,7 +60,7 @@ export default function NewsAdminPage() {
             title: item.title || '',
             excerpt: item.excerpt || '',
             content: item.content || '',
-            category: item.category || 'فعاليات',
+            category: item.category || 'أخبار',
             image: item.image || '',
         });
         setEditingId(item.id);
@@ -78,7 +79,11 @@ export default function NewsAdminPage() {
         return <div className={styles.loading}>جاري التحميل...</div>;
     }
 
-    const categories = ['فعاليات', 'رعاية', 'إداري', 'عام'];
+    // تصنيفات المركز الإعلامي، مع إبقاء تصنيف الخبر القديم إن كان مختلفاً
+    const categories = NEWS_CATEGORIES.map((c) => c.value);
+    if (formData.category && !categories.includes(formData.category)) {
+        categories.push(formData.category);
+    }
 
     return (
         <div className={styles.adminLayout}>
@@ -97,8 +102,10 @@ export default function NewsAdminPage() {
                     <Link href="/admin" className={styles.navItem}>📊 لوحة التحكم</Link>
                     <Link href="/admin/news" className={`${styles.navItem} ${styles.active}`}>📰 الأخبار</Link>
                     <Link href="/admin/reports" className={styles.navItem}>📄 التقارير</Link>
+                    <Link href="/admin/policies" className={styles.navItem}>📑 السياسات واللوائح</Link>
                     <Link href="/admin/gallery" className={styles.navItem}>📷 المعرض</Link>
                     <Link href="/admin/board" className={styles.navItem}>👤 مجلس الأمناء</Link>
+                    <Link href="/admin/executive-council" className={styles.navItem}>🧑‍💼 المجلس التنفيذي</Link>
                     <Link href="/admin/bank-accounts" className={styles.navItem}>💳 الحسابات البنكية</Link>
                     <Link href="/admin/users" className={styles.navItem}>👥 المستخدمين</Link>
                     <Link href="/admin/messages" className={styles.navItem}>📩 الرسائل</Link>

@@ -1,17 +1,26 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSiteSettings, isGalleryEnabled } from '@/lib/useSiteSettings';
 import styles from './Footer.module.css';
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
+    const siteSettings = useSiteSettings();
 
-    const quickLinks = [
+    const allQuickLinks = [
         { href: '/about', label: 'من نحن' },
-        { href: '/news', label: 'الأخبار' },
+        { href: '/news', label: 'المركز الإعلامي' },
         { href: '/reports', label: 'التقارير السنوية' },
         { href: '/gallery', label: 'معرض الصور' },
         { href: '/contact', label: 'تواصل معنا' },
     ];
+
+    // إخفاء رابط معرض الصور إذا كان معطّلاً من لوحة التحكم
+    const quickLinks = allQuickLinks.filter(
+        (link) => link.href !== '/gallery' || isGalleryEnabled(siteSettings)
+    );
 
     const activities = [
         'الزواج الجماعي',

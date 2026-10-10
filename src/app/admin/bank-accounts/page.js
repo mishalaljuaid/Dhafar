@@ -82,8 +82,10 @@ export default function BankAccountsPage() {
                     <Link href="/admin" className={styles.navItem}>📊 لوحة التحكم</Link>
                     <Link href="/admin/news" className={styles.navItem}>📰 إدارة الأخبار</Link>
                     <Link href="/admin/reports" className={styles.navItem}>📄 إدارة التقارير</Link>
+                    <Link href="/admin/policies" className={styles.navItem}>📑 السياسات واللوائح</Link>
                     <Link href="/admin/gallery" className={styles.navItem}>📷 إدارة المعرض</Link>
                     <Link href="/admin/board" className={styles.navItem}>👤 مجلس الأمناء</Link>
+                    <Link href="/admin/executive-council" className={styles.navItem}>🧑‍💼 المجلس التنفيذي</Link>
                     <Link href="/admin/bank-accounts" className={`${styles.navItem} ${styles.active}`}>💳 الحسابات البنكية</Link>
                     <Link href="/admin/users" className={styles.navItem}>👥 إدارة المستخدمين</Link>
                     <Link href="/admin/messages" className={styles.navItem}>📩 الرسائل الواردة</Link>

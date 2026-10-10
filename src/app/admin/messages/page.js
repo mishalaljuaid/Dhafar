@@ -106,6 +106,10 @@ export default function MessagesAdmin() {
                         <span className={styles.navIcon}>📄</span>
                         <span>التقارير</span>
                     </Link>
+                    <Link href="/admin/policies" className={styles.navItem}>
+                        <span className={styles.navIcon}>📑</span>
+                        <span>السياسات واللوائح</span>
+                    </Link>
                     <Link href="/admin/gallery" className={styles.navItem}>
                         <span className={styles.navIcon}>📷</span>
                         <span>المعرض</span>
@@ -113,6 +117,10 @@ export default function MessagesAdmin() {
                     <Link href="/admin/board" className={styles.navItem}>
                         <span className={styles.navIcon}>👥</span>
                         <span>مجلس الأمناء</span>
+                    </Link>
+                    <Link href="/admin/executive-council" className={styles.navItem}>
+                        <span className={styles.navIcon}>🧑‍💼</span>
+                        <span>المجلس التنفيذي</span>
                     </Link>
                     <Link href="/admin/bank-accounts" className={styles.navItem}>
                         <span className={styles.navIcon}>💳</span>

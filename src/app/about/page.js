@@ -187,7 +187,7 @@ export default function AboutPage() {
                                             <p><span>اسم الحساب:</span> {bank.accountName}</p>
                                             <p className={styles.copyableRow} onClick={() => { navigator.clipboard.writeText(bank.accountNumber); }}>
                                                 <span>رقم الحساب:</span>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', direction: 'ltr', justifyContent: 'flex-end' }}>
+                                                <span style={{ display: 'flex', alignItems: 'center', gap: '8px', direction: 'ltr', justifyContent: 'flex-end' }}>
                                                     <span className={styles.copyIcon} title="نسخ رقم الحساب">
                                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -195,11 +195,11 @@ export default function AboutPage() {
                                                         </svg>
                                                     </span>
                                                     <span dir="ltr">{bank.accountNumber}</span>
-                                                </div>
+                                                </span>
                                             </p>
                                             <p className={styles.copyableRow} onClick={() => { navigator.clipboard.writeText(bank.iban); }}>
                                                 <span>الآيبان:</span>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', direction: 'ltr', justifyContent: 'flex-end' }}>
+                                                <span style={{ display: 'flex', alignItems: 'center', gap: '8px', direction: 'ltr', justifyContent: 'flex-end' }}>
                                                     <span className={styles.copyIcon} title="نسخ الآيبان">
                                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -207,7 +207,7 @@ export default function AboutPage() {
                                                         </svg>
                                                     </span>
                                                     <span dir="ltr">{bank.iban}</span>
-                                                </div>
+                                                </span>
                                             </p>
                                         </div>
                                     </div>

@@ -100,8 +100,10 @@ export default function ReportsAdminPage() {
                     <Link href="/admin" className={styles.navItem}>📊 لوحة التحكم</Link>
                     <Link href="/admin/news" className={styles.navItem}>📰 الأخبار</Link>
                     <Link href="/admin/reports" className={`${styles.navItem} ${styles.active}`}>📄 التقارير</Link>
+                    <Link href="/admin/policies" className={styles.navItem}>📑 السياسات واللوائح</Link>
                     <Link href="/admin/gallery" className={styles.navItem}>📷 المعرض</Link>
                     <Link href="/admin/board" className={styles.navItem}>👤 مجلس الأمناء</Link>
+                    <Link href="/admin/executive-council" className={styles.navItem}>🧑‍💼 المجلس التنفيذي</Link>
                     <Link href="/admin/bank-accounts" className={styles.navItem}>💳 الحسابات البنكية</Link>
                     <Link href="/admin/users" className={styles.navItem}>👥 المستخدمين</Link>
                     <Link href="/admin/messages" className={styles.navItem}>📩 الرسائل</Link>
@@ -179,6 +181,7 @@ export default function ReportsAdminPage() {
                                                 const fd = new FormData();
                                                 fd.append('file', file);
                                                 fd.append('folder', 'reports');
+                                                fd.append('year', formData.year);
                                                 const res = await fetch('/api/upload', { method: 'POST', body: fd });
                                                 if (res.ok) {
                                                     const { url } = await res.json();
@@ -229,7 +232,7 @@ export default function ReportsAdminPage() {
                                 <tr key={item.id}>
                                     <td>{item.title}</td>
                                     <td><span className={styles.yearBadge}>{item.year}</span></td>
-                                    <td>{new Date(item.created_at).toLocaleDateString('ar-SA')}</td>
+                                    <td>{new Date(item.createdAt || item.created_at).toLocaleDateString('ar-SA')}</td>
                                     <td>
                                         <div className={styles.actions}>
                                             <button onClick={() => handleEdit(item)} className={styles.editBtn}>تعديل</button>

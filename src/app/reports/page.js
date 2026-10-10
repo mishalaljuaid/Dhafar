@@ -52,8 +52,8 @@ export default function ReportsPage() {
                                     </div>
                                     <div className={styles.reportActions}>
                                         <button className={styles.btnView} onClick={() => {
-                                            if (report.pdf_url) {
-                                                window.open(report.pdf_url, '_blank');
+                                            if ((report.pdfUrl || report.pdf_url)) {
+                                                window.open((report.pdfUrl || report.pdf_url), '_blank');
                                             } else {
                                                 alert('لا يوجد ملف PDF مرفق لهذا التقرير');
                                             }
@@ -65,9 +65,9 @@ export default function ReportsPage() {
                                             عرض
                                         </button>
                                         <button className={styles.btnDownload} onClick={() => {
-                                            if (report.pdf_url) {
+                                            if ((report.pdfUrl || report.pdf_url)) {
                                                 const a = document.createElement('a');
-                                                a.href = report.pdf_url;
+                                                a.href = (report.pdfUrl || report.pdf_url);
                                                 a.download = `${report.title}.pdf`;
                                                 a.click();
                                             } else {

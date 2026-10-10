@@ -149,3 +149,29 @@ model BankAccount {
 
   @@map("bank_accounts")
 }
+
+// ==========================================
+// جدول السياسات واللوائح
+// ==========================================
+model Policy {
+  id            Int       @id @default(autoincrement())
+  title         String
+  pdfUrl        String?   @map("pdf_url")
+  displayOrder  Int       @default(0) @map("display_order")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@map("policies")
+}
+
+// ==========================================
+// جدول أعضاء المجلس التنفيذي
+// ==========================================
+model ExecutiveMember {
+  id            Int       @id @default(autoincrement())
+  name          String
+  role          String?
+  image         String?
+  displayOrder  Int       @default(0) @map("display_order")
+
+  @@map("executive_members")
+}

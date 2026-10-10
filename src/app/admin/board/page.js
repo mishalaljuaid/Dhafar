@@ -65,7 +65,7 @@ export default function BoardAdminPage() {
             name: item.name || '',
             role: item.role || '',
             image: item.image || '',
-            display_order: item.display_order || 0,
+            display_order: item.displayOrder ?? item.display_order ?? 0,
         });
         setEditingId(item.id);
         setShowForm(true);
@@ -97,8 +97,10 @@ export default function BoardAdminPage() {
                     <Link href="/admin" className={styles.navItem}>📊 لوحة التحكم</Link>
                     <Link href="/admin/news" className={styles.navItem}>📰 الأخبار</Link>
                     <Link href="/admin/reports" className={styles.navItem}>📄 التقارير</Link>
+                    <Link href="/admin/policies" className={styles.navItem}>📑 السياسات واللوائح</Link>
                     <Link href="/admin/gallery" className={styles.navItem}>📷 المعرض</Link>
                     <Link href="/admin/board" className={`${styles.navItem} ${styles.active}`}>👥 مجلس الأمناء</Link>
+                    <Link href="/admin/executive-council" className={styles.navItem}>🧑‍💼 المجلس التنفيذي</Link>
                     <Link href="/admin/bank-accounts" className={styles.navItem}>💳 الحسابات البنكية</Link>
                     <Link href="/admin/users" className={styles.navItem}>🔑 المستخدمين</Link>
                     <Link href="/admin/messages" className={styles.navItem}>📩 الرسائل</Link>
@@ -227,7 +229,7 @@ export default function BoardAdminPage() {
                                     </td>
                                     <td>{item.name}</td>
                                     <td>{item.role}</td>
-                                    <td>{item.display_order}</td>
+                                    <td>{item.displayOrder ?? item.display_order}</td>
                                     <td>
                                         <div className={styles.actions}>
                                             <button onClick={() => handleEdit(item)} className={styles.editBtn}>تعديل</button>
