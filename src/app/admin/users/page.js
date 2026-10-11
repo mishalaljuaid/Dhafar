@@ -46,8 +46,8 @@ export default function UsersAdminPage() {
         e.preventDefault();
         setFormError('');
 
-        if (formData.password.length < 6) {
-            setFormError('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+        if (formData.password.length < 8) {
+            setFormError('كلمة المرور يجب أن تكون 8 أحرف على الأقل');
             return;
         }
 
@@ -131,7 +131,7 @@ export default function UsersAdminPage() {
                                 </div>
                                 <div>
                                     <label style={{ display: 'block', marginBottom: '6px', fontSize: '14px', color: '#555' }}>كلمة المرور</label>
-                                    <input type="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} required placeholder="6 أحرف على الأقل" style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '14px' }} />
+                                    <input type="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} required placeholder="8 أحرف على الأقل" style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '14px' }} />
                                 </div>
                                 <div>
                                     <label style={{ display: 'block', marginBottom: '6px', fontSize: '14px', color: '#555' }}>الصلاحية</label>

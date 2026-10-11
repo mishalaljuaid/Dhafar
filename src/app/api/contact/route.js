@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getSetting } from '@/lib/db';
 import prisma from '@/lib/prisma';
+import { isAdminRequest } from '@/lib/requireAdmin';
+
+const unauthorized = () => NextResponse.json({ error: 'غير مصرح' }, { status: 401 });
 
 export async function GET(request) {
+    if (!(await isAdminRequest())) return unauthorized();
     try {
         const messages = await prisma.contactMessage.findMany({
             orderBy: { createdAt: 'desc' }
@@ -62,6 +66,7 @@ export async function POST(request) {
 }
 
 export async function PUT(request) {
+    if (!(await isAdminRequest())) return unauthorized();
     try {
         await prisma.contactMessage.updateMany({
             where: { isRead: false },
@@ -75,6 +80,7 @@ export async function PUT(request) {
 }
 
 export async function DELETE(request) {
+    if (!(await isAdminRequest())) return unauthorized();
     try {
         const body = await request.json();
         const { ids } = body;

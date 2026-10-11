@@ -2,13 +2,30 @@ import { NextResponse } from 'next/server';
 import { getUserByEmail } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
+import { getClientIp, isLimited, recordFailure, clearAttempts } from '@/lib/rateLimit';
 
 export async function POST(request) {
     try {
         const { email, password } = await request.json();
+
+        // منع تخمين كلمات المرور: 5 محاولات فاشلة كل 15 دقيقة لكل عنوان IP
+        const limitKey = `login:${getClientIp(request)}`;
+        const waitSeconds = isLimited(limitKey);
+        if (waitSeconds) {
+            return NextResponse.json(
+                { error: `محاولات كثيرة، حاول بعد ${Math.ceil(waitSeconds / 60)} دقيقة` },
+                { status: 429 }
+            );
+        }
+
+        if (!email || !password) {
+            return NextResponse.json({ error: 'البريد أو كلمة المرور غير صحيحة' }, { status: 401 });
+        }
+
         const user = await getUserByEmail(email);
 
         if (!user) {
+            recordFailure(limitKey);
             return NextResponse.json({ error: 'البريد أو كلمة المرور غير صحيحة' }, { status: 401 });
         }
 
@@ -31,8 +48,11 @@ export async function POST(request) {
         }
 
         if (!passwordValid) {
+            recordFailure(limitKey);
             return NextResponse.json({ error: 'البريد أو كلمة المرور غير صحيحة' }, { status: 401 });
         }
+
+        clearAttempts(limitKey);
 
         const { password: _, ...safe } = user;
 
