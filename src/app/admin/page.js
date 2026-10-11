@@ -108,6 +108,7 @@ export default function AdminPage() {
         { href: '/admin/bank-accounts', icon: '💳', label: 'الحسابات البنكية' },
         { href: '/admin/users', icon: '👥', label: 'إدارة المستخدمين' },
         { href: '/admin/messages', icon: '📩', label: 'الرسائل الواردة' },
+        { href: '/admin/cleanup', icon: '🧹', label: 'الملفات غير المستخدمة' },
     ];
 
     const quickStats = [
