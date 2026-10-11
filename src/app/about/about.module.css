@@ -229,7 +229,8 @@
 }
 
 .teamCard h4 {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-base);
+    white-space: nowrap;
     color: var(--color-text);
     margin-bottom: var(--spacing-1);
 }
