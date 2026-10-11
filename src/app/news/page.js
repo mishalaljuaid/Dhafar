@@ -6,7 +6,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { getNews } from '@/lib/cms';
-import { NEWS_CATEGORIES, getCategoryBySlug } from '@/lib/newsCategories';
+import { NEWS_CATEGORIES, getCategoryBySlug, hasCategory, splitCategories } from '@/lib/newsCategories';
+import { formatHijri } from '@/lib/formatDate';
 import styles from './news.module.css';
 
 export default function NewsPage() {
@@ -36,7 +37,7 @@ function NewsPageContent() {
     }, []);
 
     const filteredNews = activeCategory
-        ? news.filter(n => n.category === activeCategory.value)
+        ? news.filter(n => hasCategory(n.category, activeCategory.value))
         : news;
 
     const selectCategory = (slug) => {
@@ -92,12 +93,16 @@ function NewsPageContent() {
                                         )}
                                     </div>
                                     <div className={styles.newsContent}>
-                                        <span className={styles.newsCategory}>{item.category}</span>
+                                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                                            {splitCategories(item.category).map((c) => (
+                                                <span key={c} className={styles.newsCategory}>{c}</span>
+                                            ))}
+                                        </div>
                                         <h3>{item.title}</h3>
                                         <p>{item.excerpt}</p>
                                         <div className={styles.newsMeta}>
                                             <span className={styles.newsDate}>
-                                                {new Date(item.created_at || item.createdAt).toLocaleDateString('ar-SA')}
+                                                {formatHijri(item.created_at || item.createdAt)}
                                             </span>
                                         </div>
                                     </div>

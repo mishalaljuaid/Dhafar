@@ -35,7 +35,7 @@ export async function createUser({ email, password, name, role = 'member' }) {
 // ==========================================
 export async function getPosts({ status = 'publish', limit = 50, category = null } = {}) {
     const where = { status };
-    if (category) where.category = category;
+    if (category) where.category = { contains: category };
 
     const posts = await prisma.post.findMany({
         where,

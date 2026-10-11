@@ -6,6 +6,8 @@ import Link from 'next/link';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { getNewsById, getNews } from '@/lib/cms';
+import { splitCategories } from '@/lib/newsCategories';
+import { formatHijri, formatWeekday } from '@/lib/formatDate';
 import styles from './newsDetail.module.css';
 
 export default function NewsDetailPage() {
@@ -55,10 +57,14 @@ export default function NewsDetailPage() {
                             </svg>
                             العودة للأخبار
                         </Link>
-                        <span className={styles.category}>{news.category}</span>
+                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                            {splitCategories(news.category).map((c) => (
+                                <span key={c} className={styles.category}>{c}</span>
+                            ))}
+                        </div>
                         <h1>{news.title}</h1>
                         <div className={styles.meta}>
-                            <span>تم النشر في يوم {new Date(news.created_at || news.createdAt).toLocaleDateString('ar-SA', { weekday: 'long' })} الموافق {new Date(news.created_at || news.createdAt).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                            <span>تم النشر يوم {formatWeekday(news.created_at || news.createdAt)} {formatHijri(news.created_at || news.createdAt)}</span>
                         </div>
                     </div>
                 </section>
@@ -74,7 +80,7 @@ export default function NewsDetailPage() {
                             )}
                             <div className={styles.articleContent}>
                                 <p className={styles.excerpt}>{news.excerpt}</p>
-                                <p>{news.content}</p>
+                                <p style={{ whiteSpace: 'pre-line' }}>{news.content}</p>
                             </div>
                         </article>
 
@@ -90,7 +96,7 @@ export default function NewsDetailPage() {
                                             </div>
                                             <div className={styles.relatedContent}>
                                                 <h4>{item.title}</h4>
-                                                <span>{new Date(item.createdAt).toLocaleDateString('ar-SA')}</span>
+                                                <span>{formatHijri(item.createdAt)}</span>
                                             </div>
                                         </Link>
                                     ))}

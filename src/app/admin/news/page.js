@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getCurrentUser, ROLES } from '@/lib/auth';
 import { getNews, createNews, updateNews, deleteNews } from '@/lib/cms';
-import { NEWS_CATEGORIES } from '@/lib/newsCategories';
+import { NEWS_CATEGORIES, splitCategories, joinCategories } from '@/lib/newsCategories';
 import styles from './newsAdmin.module.css';
 
 export default function NewsAdminPage() {
@@ -46,6 +46,10 @@ export default function NewsAdminPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!formData.category) {
+            alert('الرجاء اختيار تصنيف واحد على الأقل');
+            return;
+        }
         if (editingId) {
             await updateNews(editingId, formData);
         } else {
@@ -80,10 +84,18 @@ export default function NewsAdminPage() {
     }
 
     // تصنيفات المركز الإعلامي، مع إبقاء تصنيف الخبر القديم إن كان مختلفاً
+    // يمكن اختيار أكثر من تصنيف للخبر، مع إبقاء أي تصنيف قديم مختلف ظاهراً
     const categories = NEWS_CATEGORIES.map((c) => c.value);
-    if (formData.category && !categories.includes(formData.category)) {
-        categories.push(formData.category);
-    }
+    splitCategories(formData.category).forEach((c) => {
+        if (!categories.includes(c)) categories.push(c);
+    });
+    const selectedCategories = splitCategories(formData.category);
+    const toggleCategory = (cat) => {
+        const next = selectedCategories.includes(cat)
+            ? selectedCategories.filter((c) => c !== cat)
+            : [...selectedCategories, cat];
+        setFormData({ ...formData, category: joinCategories(next) });
+    };
 
     return (
         <div className={styles.adminLayout}>
@@ -150,15 +162,20 @@ export default function NewsAdminPage() {
                                     />
                                 </div>
                                 <div className={styles.formGroup}>
-                                    <label>التصنيف</label>
-                                    <select
-                                        value={formData.category}
-                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                    >
+                                    <label>التصنيف (يمكن اختيار أكثر من تصنيف)</label>
+                                    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', paddingTop: '8px' }}>
                                         {categories.map(cat => (
-                                            <option key={cat} value={cat}>{cat}</option>
+                                            <label key={cat} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: 'normal' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedCategories.includes(cat)}
+                                                    onChange={() => toggleCategory(cat)}
+                                                    style={{ width: 'auto' }}
+                                                />
+                                                {cat}
+                                            </label>
                                         ))}
-                                    </select>
+                                    </div>
                                 </div>
                             </div>
                             <div className={styles.formGroup}>
@@ -243,7 +260,11 @@ export default function NewsAdminPage() {
                             {news.map(item => (
                                 <tr key={item.id}>
                                     <td>{item.title}</td>
-                                    <td><span className={styles.categoryBadge}>{item.category}</span></td>
+                                    <td>
+                                        {splitCategories(item.category).map((c) => (
+                                            <span key={c} className={styles.categoryBadge} style={{ marginInlineEnd: '4px' }}>{c}</span>
+                                        ))}
+                                    </td>
                                     <td>{new Date(item.created_at || item.createdAt).toLocaleDateString('ar-SA')}</td>
                                     <td>
                                         <div className={styles.actions}>

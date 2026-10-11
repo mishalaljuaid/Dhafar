@@ -10,3 +10,17 @@ export const NEWS_CATEGORIES = [
 export function getCategoryBySlug(slug) {
     return NEWS_CATEGORIES.find((c) => c.slug === slug) || null;
 }
+
+// الخبر يمكن أن يحمل أكثر من تصنيف، تُحفظ مفصولة بفاصلة: "أخبار,فعاليات"
+export function splitCategories(value) {
+    if (!value) return [];
+    return value.split(',').map((c) => c.trim()).filter(Boolean);
+}
+
+export function joinCategories(list) {
+    return [...new Set(list.map((c) => c.trim()).filter(Boolean))].join(',');
+}
+
+export function hasCategory(value, category) {
+    return splitCategories(value).includes(category);
+}

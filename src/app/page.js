@@ -7,6 +7,8 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { initializeAuth } from '@/lib/auth';
 import { initializeCMS, getNews, getStatistics, getBankAccounts } from '@/lib/cms';
+import { splitCategories } from '@/lib/newsCategories';
+import { formatHijri } from '@/lib/formatDate';
 import styles from './page.module.css';
 
 export default function Home() {
@@ -183,11 +185,11 @@ export default function Home() {
                     )}
                   </div>
                   <div className={styles.newsContent}>
-                    <span className={styles.newsCategory}>{item.category}</span>
+                    <span className={styles.newsCategory}>{splitCategories(item.category).join(' · ')}</span>
                     <h3>{item.title}</h3>
                     <p>{item.excerpt}</p>
                     <span className={styles.newsDate}>
-                      {new Date(item.created_at || item.createdAt).toLocaleDateString('ar-SA')}
+                      {formatHijri(item.created_at || item.createdAt)}
                     </span>
                   </div>
                 </Link>
