@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getCurrentUser, ROLES } from '@/lib/auth';
 import { getPolicies, createPolicy, updatePolicy, deletePolicy } from '@/lib/cms';
+import { POLICY_CATEGORIES } from '@/lib/policyCategories';
 import styles from '../reports/reportsAdmin.module.css';
 
 export default function PoliciesAdminPage() {
@@ -17,6 +18,7 @@ export default function PoliciesAdminPage() {
     const [uploading, setUploading] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
+        category: POLICY_CATEGORIES[0].value,
         displayOrder: 0,
         fileUrl: '',
     });
@@ -37,7 +39,7 @@ export default function PoliciesAdminPage() {
     };
 
     const resetForm = () => {
-        setFormData({ title: '', displayOrder: 0, fileUrl: '' });
+        setFormData({ title: '', category: POLICY_CATEGORIES[0].value, displayOrder: 0, fileUrl: '' });
         setEditingId(null);
         setShowForm(false);
     };
@@ -51,6 +53,7 @@ export default function PoliciesAdminPage() {
         const payload = {
             title: formData.title,
             pdfUrl: formData.fileUrl,
+            category: formData.category,
             displayOrder: formData.displayOrder,
         };
         const result = editingId
@@ -67,6 +70,7 @@ export default function PoliciesAdminPage() {
     const handleEdit = (item) => {
         setFormData({
             title: item.title || '',
+            category: item.category || POLICY_CATEGORIES[0].value,
             displayOrder: item.displayOrder || 0,
             fileUrl: item.pdfUrl || '',
         });
@@ -150,6 +154,17 @@ export default function PoliciesAdminPage() {
                                     />
                                 </div>
                                 <div className={styles.formGroup}>
+                                    <label>التصنيف</label>
+                                    <select
+                                        value={formData.category}
+                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                    >
+                                        {POLICY_CATEGORIES.map((c) => (
+                                            <option key={c.slug} value={c.value}>{c.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className={styles.formGroup}>
                                     <label>ترتيب العرض</label>
                                     <input
                                         type="number"
@@ -218,6 +233,7 @@ export default function PoliciesAdminPage() {
                         <thead>
                             <tr>
                                 <th>العنوان</th>
+                                <th>التصنيف</th>
                                 <th>الترتيب</th>
                                 <th>تاريخ الإضافة</th>
                                 <th>الإجراءات</th>
@@ -227,6 +243,7 @@ export default function PoliciesAdminPage() {
                             {items.map(item => (
                                 <tr key={item.id}>
                                     <td>{item.title}</td>
+                                    <td>{item.category || '—'}</td>
                                     <td><span className={styles.yearBadge}>{item.displayOrder}</span></td>
                                     <td>{new Date(item.createdAt || item.created_at).toLocaleDateString('ar-SA')}</td>
                                     <td>

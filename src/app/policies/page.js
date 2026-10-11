@@ -1,14 +1,37 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { getPolicies } from '@/lib/cms';
+import { POLICY_CATEGORIES, getPolicyCategoryBySlug } from '@/lib/policyCategories';
 import styles from '@/app/reports/reports.module.css';
+import filterStyles from '@/app/news/news.module.css';
 
 export default function PoliciesPage() {
+    return (
+        <Suspense fallback={null}>
+            <PoliciesPageContent />
+        </Suspense>
+    );
+}
+
+function PoliciesPageContent() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
     const [policies, setPolicies] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    // التصنيف الحالي من الرابط: /policies?type=grants
+    const activeCategory = getPolicyCategoryBySlug(searchParams.get('type'));
+    const filtered = activeCategory
+        ? policies.filter((p) => p.category === activeCategory.value)
+        : policies;
+
+    const selectCategory = (slug) => {
+        router.replace(slug ? `/policies?type=${slug}` : '/policies', { scroll: false });
+    };
 
     useEffect(() => {
         getPolicies()
@@ -44,14 +67,33 @@ export default function PoliciesPage() {
                 <section className={styles.hero}>
                     <div className={styles.heroContent}>
                         <h1>السياسات واللوائح</h1>
-                        <p>الأنظمة واللوائح المنظمة لعمل الصندوق</p>
+                        <p>{activeCategory ? activeCategory.label : 'الأنظمة واللوائح المنظمة لعمل الصندوق'}</p>
                     </div>
                 </section>
 
                 <section className={styles.reportsSection}>
                     <div className={styles.container}>
+                        {/* التصنيفات */}
+                        <div className={filterStyles.filters}>
+                            <button
+                                className={`${filterStyles.filterBtn} ${!activeCategory ? filterStyles.active : ''}`}
+                                onClick={() => selectCategory(null)}
+                            >
+                                الكل
+                            </button>
+                            {POLICY_CATEGORIES.map((cat) => (
+                                <button
+                                    key={cat.slug}
+                                    className={`${filterStyles.filterBtn} ${activeCategory?.slug === cat.slug ? filterStyles.active : ''}`}
+                                    onClick={() => selectCategory(cat.slug)}
+                                >
+                                    {cat.label}
+                                </button>
+                            ))}
+                        </div>
+
                         <div className={styles.reportsGrid}>
-                            {policies.map((item) => (
+                            {filtered.map((item) => (
                                 <div key={item.id} className={styles.reportCard}>
                                     <div className={styles.reportIcon}>
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -64,6 +106,7 @@ export default function PoliciesPage() {
                                     </div>
                                     <div className={styles.reportContent}>
                                         <h3>{item.title}</h3>
+                                        {item.category && <span className={styles.reportYear}>{item.category}</span>}
                                     </div>
                                     <div className={styles.reportActions}>
                                         <button className={styles.btnView} onClick={() => openFile(item)}>
@@ -86,7 +129,7 @@ export default function PoliciesPage() {
                             ))}
                         </div>
 
-                        {!loading && policies.length === 0 && (
+                        {!loading && filtered.length === 0 && (
                             <div className={styles.empty}>
                                 <span>📄</span>
                                 <p>لا توجد سياسات أو لوائح متاحة حالياً</p>

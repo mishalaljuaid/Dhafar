@@ -188,11 +188,12 @@ export async function getPolicies() {
     });
 }
 
-export async function createPolicy({ title, pdfUrl, displayOrder }) {
+export async function createPolicy({ title, pdfUrl, category, displayOrder }) {
     return await prisma.policy.create({
         data: {
             title,
             pdfUrl: pdfUrl || '',
+            category: category || null,
             displayOrder: parseInt(displayOrder) || 0
         }
     });
@@ -202,6 +203,7 @@ export async function updatePolicy(id, data) {
     const updateData = {};
     if (data.title !== undefined) updateData.title = data.title;
     if (data.pdfUrl !== undefined) updateData.pdfUrl = data.pdfUrl;
+    if (data.category !== undefined) updateData.category = data.category || null;
     if (data.displayOrder !== undefined) updateData.displayOrder = parseInt(data.displayOrder) || 0;
 
     return await prisma.policy.update({
